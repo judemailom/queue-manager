@@ -1,0 +1,125 @@
+<ScrollView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" 
+    tools:context=".HomeActivity"
+    >
+<RelativeLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+     >
+
+    
+	<TableLayout
+	    android:id="@+id/tableLayout1"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignLeft="@+id/close_queue"
+	    android:layout_alignParentTop="true"
+	    android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="25dp" >
+
+	    <TableRow android:layout_weight="1" >
+
+	        <ImageView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:contentDescription="@string/desc_calendar"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="25dp"
+	            android:src="@drawable/calendar" />
+
+	        <TextView
+	            android:id="@+id/date"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="16dp"
+	            android:layout_marginTop="23dp"
+	            android:layout_weight="1"
+	            android:duplicateParentState="true"
+	            android:gravity="center"
+	            android:textAlignment="inherit"
+	            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	    </TableRow>
+
+	    <TableRow
+	        android:layout_weight="1"
+	        >
+	        <ImageView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:contentDescription="@string/desc_clock"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="25dp"
+	            android:src="@drawable/clock" />
+
+	        <DigitalClock
+	            android:id="@+id/digitalClock1"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="16dp"
+	            android:layout_marginTop="23dp"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:textAppearance="?android:attr/textAppearanceLarge" />
+	    </TableRow>
+
+	    <TableRow android:layout_weight="1" >
+
+	        <ImageView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center_vertical|center_horizontal"
+	            android:layout_weight="1"
+	            android:contentDescription="@string/desc_queue"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="25dp"
+	            android:src="@drawable/customer_count" />
+
+	        <TextView
+	            android:id="@+id/queue_count"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="16dp"
+	            android:layout_marginTop="23dp"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:text="@string/queue_count"
+	            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	    </TableRow>
+	</TableLayout>
+    
+    <Button
+        android:id="@+id/close_queue"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableLayout1"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="25dp"
+        android:text="@string/button_close" 
+        android:onClick="queue_method"/>
+
+    <Button
+        android:id="@+id/pause_queue"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/close_queue"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/button_pause"
+        android:visibility="invisible" />
+	
+</RelativeLayout>
+</ScrollView>
