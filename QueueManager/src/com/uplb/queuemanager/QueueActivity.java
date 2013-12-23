@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.telephony.SmsManager;
 //import android.graphics.Color;
-import android.util.Log;
+//import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -90,9 +90,9 @@ public class QueueActivity extends Activity {
 	                 	   sms.sendTextMessage(phone, null, confirmation_message, null, null);
 	                 	   
 	                 	   // Show the toast  like in above screen shot
-	                 	   Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
+	                 	   //Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
 	                    }catch (Exception e) {
-	                 	   Toast.makeText(getApplicationContext(),"SMS failed, please try again.",Toast.LENGTH_LONG).show();
+	                 	   //Toast.makeText(getApplicationContext(),"SMS failed, please try again.",Toast.LENGTH_LONG).show();
 	                 	   e.printStackTrace();
 	                    }}//end SMS
             		
@@ -241,5 +241,7 @@ public class QueueActivity extends Activity {
 		getMenuInflater().inflate(R.menu.queue, menu);
 		return true;
 	}
+	
+	
 
 }

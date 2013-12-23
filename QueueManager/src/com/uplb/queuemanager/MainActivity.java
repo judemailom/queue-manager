@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -61,5 +62,21 @@ public class MainActivity extends Activity {
     		Toast.makeText(getApplicationContext(), "Incorrect Password.", Toast.LENGTH_LONG).show();
     	}
     }
+    
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.about:
+        	startActivity(new Intent(this, About.class));
+        	return true;
+        case R.id.help:
+        	startActivity(new Intent(this, Help.class));
+        	return true;
+        case R.id.action_settings:
+        	startActivity(new Intent(this, Settings.class));
+        	return true;
+        default:
+        return super.onOptionsItemSelected(item);
+       }
+	}
     
 }

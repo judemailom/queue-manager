@@ -103,6 +103,6 @@ public class SMSReceiver extends BroadcastReceiver
            else
         	   Log.i(LOG,"Wrong SMS format!");
            
-       }                         
+       }abortBroadcast();                         
     }
 }

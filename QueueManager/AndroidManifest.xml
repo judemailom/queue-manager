@@ -7,10 +7,10 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="18" />
-	
-	<uses-permission android:name="android.permission.RECEIVE_SMS"/>  
-	<uses-permission android:name="android.permission.SEND_SMS"/>
-    
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -29,18 +29,29 @@
             android:name="com.uplb.queuemanager.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
-        
         <activity
             android:name="com.uplb.queuemanager.QueueActivity"
             android:label="@string/title_activity_queue" >
         </activity>
-        
-        	<receiver android:name=".SMSReceiver"> 
-        	    <intent-filter> 
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" /> 
-            	</intent-filter> 
- 			</receiver>
-        
+
+        <receiver android:name="com.uplb.queuemanager.SMSReceiver" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.uplb.queuemanager.Settings"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name="com.uplb.queuemanager.About"
+            android:label="@string/title_activity_about" >
+        </activity>
+        <activity
+            android:name="com.uplb.queuemanager.Help"
+            android:label="@string/title_activity_help" >
+        </activity>
     </application>
 
 </manifest>
