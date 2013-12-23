@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Queue Manager</string>
+    <string name="action_settings">Edit Profile</string>
+    <string name="title">Logo</string>
+    <string name="login">Login</string>
+    <string name="hint_password">Password</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="desc_calendar">calendar</string>
+    <string name="desc_queue">queue count</string>
+    <string name="desc_clock">clock</string>
+    <string name="button_close">OPEN QUEUE</string>
+    <string name="button_pause">PAUSE QUEUE</string>
+    <string name="title_activity_queue">Queue</string>
+    <string name="now_serving">Now Serving</string>
+    <string name="current_queue">Current Queue</string>
+    <string name="desc_now_serving">now_serving</string>
+    <string name="desc_current_queue">current_queue</string>
+    <string name="queue_count">CLOSED QUEUE</string>
+    <string name="about">About</string>
+    <string name="help">Help</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_about">About</string>
+    <string name="title_activity_help">Help</string>
+    <string name="company_name">Company Name</string>
+    <string name="hint">Help</string>
+
+</resources>

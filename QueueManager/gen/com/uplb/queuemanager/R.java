@@ -38,17 +38,27 @@ public final class R {
         public static final int settings=0x7f020007;
     }
     public static final class id {
-        public static final int about=0x7f09000e;
-        public static final int action_settings=0x7f09000d;
+        public static final int about=0x7f090017;
+        public static final int action_settings=0x7f090019;
         public static final int close_queue=0x7f090001;
         public static final int date=0x7f090002;
         public static final int digitalClock1=0x7f090003;
-        public static final int help=0x7f09000f;
+        public static final int help=0x7f090018;
         public static final int login=0x7f090007;
         public static final int password=0x7f090008;
         public static final int pause_queue=0x7f090005;
+        public static final int profile_address=0x7f090011;
+        public static final int profile_address_label=0x7f090010;
+        public static final int profile_header=0x7f09000d;
+        public static final int profile_name=0x7f09000f;
+        public static final int profile_name_label=0x7f09000e;
+        public static final int profile_password=0x7f090015;
+        public static final int profile_password_label=0x7f090014;
+        public static final int profile_phone=0x7f090013;
+        public static final int profile_phone_label=0x7f090012;
         public static final int queue_count=0x7f090004;
         public static final int queue_head=0x7f09000c;
+        public static final int save_button=0x7f090016;
         public static final int serving_head=0x7f09000a;
         public static final int tableLayout1=0x7f090000;
         public static final int table_current_queue=0x7f09000b;
@@ -77,6 +87,7 @@ public final class R {
         public static final int app_name=0x7f050000;
         public static final int button_close=0x7f05000a;
         public static final int button_pause=0x7f05000b;
+        public static final int company_name=0x7f050017;
         public static final int current_queue=0x7f05000e;
         public static final int desc_calendar=0x7f050007;
         public static final int desc_clock=0x7f050009;
@@ -85,10 +96,15 @@ public final class R {
         public static final int desc_queue=0x7f050008;
         public static final int hello_world=0x7f050006;
         public static final int help=0x7f050013;
+        public static final int hint=0x7f050018;
         public static final int hint_password=0x7f050004;
         public static final int login=0x7f050003;
         public static final int now_serving=0x7f05000d;
+        public static final int profile_address=0x7f050019;
+        public static final int profile_password=0x7f05001b;
+        public static final int profile_phone=0x7f05001a;
         public static final int queue_count=0x7f050011;
+        public static final int save=0x7f05001c;
         public static final int title=0x7f050002;
         public static final int title_activity_about=0x7f050015;
         public static final int title_activity_help=0x7f050016;

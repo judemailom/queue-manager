@@ -8368,3 +8368,60 @@ Binding(CTRL+SHIFT+\,
 
 !ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 00:52:29.911
 !MESSAGE activity_settings.xml: Couldn't resolve resource @string/settings
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:02.094
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/company_name
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:02.119
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/hint
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:02.125
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_address
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:02.137
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_phone
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:02.156
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_password
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:48.513
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/company_name
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:48.522
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/hint
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:48.527
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_address
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:48.540
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_phone
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:05:48.554
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_password
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:09.186
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_address
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:09.202
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_phone
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:09.215
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_password
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:22.139
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_address
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:22.150
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_phone
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:22.160
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_password
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:50.302
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_phone
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:06:50.314
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_password
+
+!ENTRY com.android.ide.eclipse.adt 2 0 2013-12-24 02:07:13.781
+!MESSAGE activity_settings.xml: Couldn't resolve resource @string/profile_password
