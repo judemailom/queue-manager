@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +28,21 @@ public class MainActivity extends Activity {
  		databaseAdapter.open();
  		//databaseAdapter.insertUser("test", "test", "landbank"); //if(landbank-test != initialized) | password (md5)
  		userList=databaseAdapter.getAllUsers();
+ 		if(userList==null){
+ 			AlertDialog.Builder welcome = new AlertDialog.Builder(this);
+ 			welcome.setMessage("To start using Queue Manager, you have to update your profile first.");
+ 			welcome.setTitle("Welcome!");
+ 			welcome.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+ 			    public void onClick(DialogInterface dialog, int which) {
+ 			        Intent intent = new Intent();
+ 			        intent.setClass(getApplicationContext(), Settings.class);
+ 			        startActivity(intent);
+ 			        dialog.cancel();
+ 			        return;
+ 			    } 
+ 			});
+ 			welcome.show();
+ 		}
  		databaseAdapter.close();
 		
     }

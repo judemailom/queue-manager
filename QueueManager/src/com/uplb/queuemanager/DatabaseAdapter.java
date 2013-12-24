@@ -50,7 +50,7 @@ public class DatabaseAdapter
 		//COL (USER_NAME,PASSWORD,COMP_NAME)		                
 		static final String DATABASE_CREATE_USER = "create table if not exists USER" +
 								"(_ID integer PRIMARY KEY autoincrement,"+
-								"USER_NAME text not null, PASSWORD text, COMP_NAME text);";
+								"PASSWORD text, COMP_NAME text, COMP_ADDRESS text, COMP_CONTACT integer not null);";
 		
 								
         
@@ -406,13 +406,14 @@ public class DatabaseAdapter
             return ql;
         }
 		
-		public void insertUser(String user_name, String password, String comp_name)
+		public void insertUser(String comp_add, String password, String comp_name, String comp_contact)
         {
           
             ContentValues newValues = new ContentValues();
-            newValues.put("USER_NAME", user_name);
+            newValues.put("COMP_ADDRESS", comp_add);
             newValues.put("PASSWORD", password);
             newValues.put("COMP_NAME", comp_name);
+            newValues.put("COMP_CONTACT", comp_contact);
 			
             
            
