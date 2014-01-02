@@ -18,6 +18,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.uplb.queuemanager.MainActivity"
+            android:noHistory="true"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,13 +36,14 @@
         </activity>
 
         <receiver android:name="com.uplb.queuemanager.SMSReceiver" >
-            <intent-filter>
+            <intent-filter android:priority="100">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
         <activity
             android:name="com.uplb.queuemanager.Settings"
+            android:noHistory="true"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity

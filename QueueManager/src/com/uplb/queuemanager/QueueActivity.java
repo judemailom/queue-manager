@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.telephony.SmsManager;
 //import android.graphics.Color;
 //import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 //import android.view.ViewGroup;
 //import android.view.View.OnClickListener;
@@ -25,7 +27,7 @@ import android.widget.Toast;
 
 public class QueueActivity extends Activity {
 	
-	private static final String LOG = "com.uplb.queuemanager";
+	//private static final String LOG = "com.uplb.queuemanager";
 	private TableLayout table, serving_table;
 	private ArrayList<String> customerList;
 	private DatabaseAdapter databaseAdapter;
@@ -49,8 +51,8 @@ public class QueueActivity extends Activity {
 			        //hide the row
 			        table.removeView(table.getChildAt(1));
 			        //DELETE THIS CUSTOMER
-			        databaseAdapter.updateStatus(customer); 
-			        
+			        databaseAdapter.updateStatus(customer);
+			        databaseAdapter.updateQueuePosition(customer,0);
 			        //compute for the waiting time of other customers
 			        String st = databaseAdapter.getStartTime(customer);
 			        String et = databaseAdapter.getEndTime(customer);
@@ -76,21 +78,21 @@ public class QueueActivity extends Activity {
             		//do i really need queue table T_T
 			        
 			        //UPDATE QUEUE POSITION OF OTHER CUSTOMERS
-			        for(String phone: customerList){
+			        if(databaseAdapter.getAllCustomers()!=null){
+			        for(String phone: databaseAdapter.getAllCustomers()){
 			        int posn=databaseAdapter.getQueuePosn(phone);
             		int ewt = awt*(posn-2);
 			        databaseAdapter.updateQueuePosition(phone,posn-1);
             		
-            		//SEND UPDATE MESSAGE TO ALL (PASS AS PARAMETER THE ARRAYLIST)
+            		//SEND UPDATE MESSAGE TO ALL WHOS NOT DONE 
 			        if((posn-1)>0){
 	            		String confirmation_message = "Good day! Currently, there are only "+ (posn-1) +" customers to be served before you. Your estimated waiting time is " + ewt +" minutes. Thank you! -Management";
 	                    //prompt regarding sent confirmation message
 	                    try{
 	                 	   SmsManager sms = SmsManager.getDefault(); 
 	                 	   sms.sendTextMessage(phone, null, confirmation_message, null, null);
-	                 	   
-	                 	   // Show the toast  like in above screen shot
-	                 	   //Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
+	                 	   databaseAdapter.updateWaitTime(phone, ewt);
+	                 	   Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
 	                    }catch (Exception e) {
 	                 	   //Toast.makeText(getApplicationContext(),"SMS failed, please try again.",Toast.LENGTH_LONG).show();
 	                 	   e.printStackTrace();
@@ -98,7 +100,7 @@ public class QueueActivity extends Activity {
             		
 			        
 			        
-			        }//end - for
+			        }}//end - for - if
 			        
 			        
 			        databaseAdapter.close();
@@ -124,12 +126,14 @@ public class QueueActivity extends Activity {
 		        	else
 		        		queue_table.getChildAt(i).setBackgroundResource(R.color.white);
 		       	}
-	       	 	
-	       	 	tv.setText(customer);
+		        
+		        databaseAdapter.open();
+	       	 	tv.setText(databaseAdapter.getName(customer));
 		        tv2.setText("Waiting time: "+time+" mins.");
 		        btn.setText("End");
+		        databaseAdapter.close();
 		        
-		        btn.setOnClickListener(click2(customer, serving_table, customerList));//what to seeeeend?
+		        btn.setOnClickListener(click2(customer, serving_table, customerList));
 		        
 		        tv.setTextAppearance(getApplicationContext(), android.R.style.TextAppearance_Small);
 		        tv2.setTextAppearance(getApplicationContext(), android.R.style.TextAppearance_Small);
@@ -194,6 +198,7 @@ public class QueueActivity extends Activity {
 	    	
 	        
 	        int i=0;
+	        if(customerList!=null){
 	        for(final String customer: customerList){
 				TableRow row = new TableRow(this);
 				TextView tv = new TextView(this);
@@ -203,11 +208,12 @@ public class QueueActivity extends Activity {
 				//get waiting_time wrt phone_number
 				databaseAdapter.open();
 		        final String time = databaseAdapter.getWaitingTime(customer);
-		        databaseAdapter.close();
 		        
-		        tv.setText(customer);
+		        tv.setText(databaseAdapter.getName(customer));
 		        tv2.setText("Waiting time: "+time+" mins.");
 		        img.setText("Start");
+		        
+		        databaseAdapter.close();
 		        
 		        img.setOnClickListener(click(customer,time,row,serving_table,tv_pass,tv2_pass,btn_pass,tr_pass,table,customerList));
 		        
@@ -232,7 +238,9 @@ public class QueueActivity extends Activity {
 		        
 		       table.addView(row,new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT) );
 			}
-			
+	        }
+	        else 
+	        	Toast.makeText(getApplicationContext(), "There are no customers yet." , Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -242,6 +250,20 @@ public class QueueActivity extends Activity {
 		return true;
 	}
 	
-	
+	public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.about:
+        	startActivity(new Intent(this, About.class));
+        	return true;
+        case R.id.help:
+        	startActivity(new Intent(this, Help.class));
+        	return true;
+        case R.id.action_settings:
+        	startActivity(new Intent(this, Settings.class));
+        	return true;
+        default:
+        return super.onOptionsItemSelected(item);
+       }
+	}
 
 }

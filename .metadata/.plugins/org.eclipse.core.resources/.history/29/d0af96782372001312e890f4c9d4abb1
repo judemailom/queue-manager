@@ -1,0 +1,64 @@
+package com.uplb.queuemanager;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.view.Menu;
+import android.view.View;
+import android.widget.EditText;
+
+public class Settings extends Activity {
+	private EditText password, name, contact, address;
+	private int flag=0;
+	private DatabaseAdapter databaseAdapter;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_settings);
+		
+		password = (EditText)this.findViewById(R.id.profile_password);
+		name = (EditText)this.findViewById(R.id.profile_name);
+		contact = (EditText)this.findViewById(R.id.profile_phone);
+		address = (EditText)this.findViewById(R.id.profile_address);
+		
+		databaseAdapter = new DatabaseAdapter(getApplicationContext());
+		databaseAdapter.open();
+		String comp_name = databaseAdapter.getUserName();
+		String comp_pass =;
+		String contact =;
+		if(comp_name!=null){
+			name.setText(comp_name);
+			
+			flag=1;
+		}else flag=0;
+		
+		//databaseAdapter.insertUser(address.getText().toString(), password.getText().toString(), name.getText().toString(), contact.getText().toString());
+		databaseAdapter.close();
+		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.settings, menu);
+		return true;
+	}
+
+	public void save_method(View view){
+		
+		databaseAdapter = new DatabaseAdapter(getApplicationContext());
+		databaseAdapter.open();
+		if(flag==0)
+			databaseAdapter.insertUser(address.getText().toString(), password.getText().toString(), name.getText().toString(), contact.getText().toString());
+		//else
+			//update
+		databaseAdapter.close();
+		finish();
+		
+		//re-instantiate MainActivity
+		Intent i=new Intent(Settings.this, MainActivity.class);
+        startActivity(i);
+	        
+        
+	}
+}

@@ -1,0 +1,498 @@
+package com.uplb.queuemanager;
+
+
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import android.widget.Toast;
+
+
+public class DatabaseAdapter 
+{
+		private static final String LOG = "com.uplb.queuemanager";
+		
+        static final String DATABASE_NAME = "queuemanager.db";
+        static final int DATABASE_VERSION = 2;
+        public static final int NAME_COLUMN = 1;
+        
+        //Date current = new Date();
+		final Calendar c = Calendar.getInstance();
+	    int yy = c.get(Calendar.YEAR);
+	    int mm = c.get(Calendar.MONTH);
+	    int dd = c.get(Calendar.DAY_OF_MONTH);
+
+  	    // set current date into textview
+  	  	String date = (new StringBuilder()
+  	    			.append(mm+1).append("-")
+  	    			.append(dd).append("-").append(yy)).toString();
+    
+        //COL (PHONE_NUMBER, QUEUE_POSTITION, ARRIVAL_TIME, WAITING_TIME, TOTAL_SERVICE_TIME, CUSTOMER_NAME, START_SERVICE_TIME, END_SERVICE_TIME, DATE, FKEY_ID)
+        static final String DATABASE_CREATE_CUSTOMER = "create table if not exists CUSTOMER"+
+                                     "(_ID integer PRIMARY KEY autoincrement,"+ 
+                                     "PHONE_NUMBER text not null,QUEUE_POSITION integer," +
+                                     "ARRIVAL_TIME text, WAITING_TIME integer," +
+                                     "TOTAL_SERVICE_TIME integer, CUSTOMER_NAME text," +
+                                     "START_SERVICE_TIME text, END_SERVICE_TIME text,DATE integer,"+
+                                     "ISQUEUED integer, QUEUE_ID INTEGER, FOREIGN KEY(QUEUE_ID) REFERENCES QUEUE(_ID)); ";
+        
+        //COL (QUEUE_LENGTH, AVERAGE_SERVICE_TIME, DATE, FKEY_ID)
+        static final String DATABASE_CREATE_QUEUE = "create table if not exists QUEUE"+
+				                "(_ID integer PRIMARY KEY autoincrement,"+ 
+				                "QUEUE_LENGTH integer, AVERAGE_SERVICE_TIME integer, DATE integer,"+
+				                "USER_ID INTEGER, FOREIGN KEY(USER_ID) REFERENCES USER(ID)); ";
+		
+		//COL (USER_NAME,PASSWORD,COMP_NAME)		                
+		static final String DATABASE_CREATE_USER = "create table if not exists USER" +
+								"(_ID integer PRIMARY KEY autoincrement,"+
+								"PASSWORD text, COMP_NAME text, COMP_ADDRESS text, COMP_CONTACT integer not null);";
+		
+								
+        
+        public  SQLiteDatabase db; 			//Variable to hold the database instance
+        private final Context context; 		//Context of the application using the database.
+        private DatabaseHelper dbHelper;	//Database open/upgrade helper
+        
+        //CONSTRUCTOR
+        public  DatabaseAdapter(Context _context) 
+        {
+        		this.context = _context;
+                this.dbHelper = new DatabaseHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+         //METHOD - OPEN DB  
+        public  DatabaseAdapter open() throws SQLException 
+        {
+        		db = this.dbHelper.getWritableDatabase();
+                return this;
+        }
+    
+        //METHOD - CLOSE DB  
+        public void close() 
+        {
+        	dbHelper.close();
+        }
+ 
+        //METHOD - GET DB 
+        public  SQLiteDatabase getDatabaseInstance()
+        {
+                return db;
+        }
+        
+        //METHOD - INSERT TO TABLE CUSTOMER
+        //COL (PHONE_NUMBER, QUEUE_POSTITION (i), ARRIVAL_TIME, WAITING_TIME (i), TOTAL_SERVICE_TIME (i), CUSTOMER_NAME, START/END(i))
+        public void insertCustomer(String phone_number,
+									int queue_position, 
+									String arrival_time, 
+									int waiting_time, 
+									int total_service_time, 
+									String name, 
+									int queue_id)
+        {
+        	Log.i(LOG,"INSERTING TO TABLE CUSTOMER");
+            ContentValues newValues = new ContentValues();
+            newValues.put("PHONE_NUMBER", phone_number);
+            newValues.put("QUEUE_POSITION",queue_position);
+            newValues.put("ARRIVAL_TIME", arrival_time);
+            newValues.put("WAITING_TIME",waiting_time);
+            newValues.put("TOTAL_SERVICE_TIME", total_service_time);
+            newValues.put("CUSTOMER_NAME",name);
+            newValues.put("START_SERVICE_TIME", "00:00:00.000");
+            newValues.put("END_SERVICE_TIME","00:00:00.000");
+            newValues.put("DATE",date);
+            newValues.put("ISQUEUED",1);
+            newValues.put("QUEUE_ID",queue_id);
+           
+           
+            db.insert("CUSTOMER", null, newValues);
+            Toast.makeText(context, "Customer Info Saved", Toast.LENGTH_LONG).show();
+       
+   
+         }
+        
+        //USED
+        public void updateStatus(String phone){
+        	//update query
+        	Log.i(LOG,"UPDATING STATUS OF CUSTOMER = "+phone);
+       	 	ContentValues updatedValues = new ContentValues();
+            updatedValues.put("ISQUEUED", 0);
+            
+            String where="PHONE_NUMBER = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{phone});
+        }
+        
+        //USED
+        public void updateStartTime(String phone, String start){
+        	//update query
+        	Log.i(LOG,"UPDATING TABLE CUSTOMER WITH START = "+start+" AND Phone = "+phone);
+       	 	ContentValues updatedValues = new ContentValues();
+            updatedValues.put("START_SERVICE_TIME", start);
+            
+            String where="PHONE_NUMBER = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{phone});
+        }
+        
+        //USED
+        public void updateEndTime(String phone, String end){
+        	//update query
+        	Log.i(LOG,"UPDATING TABLE CUSTOMER WITH END = "+end+" AND Phone = "+phone);
+       	 	ContentValues updatedValues = new ContentValues();
+            updatedValues.put("END_SERVICE_TIME", end);
+            
+            String where="PHONE_NUMBER = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{phone});
+        }
+        
+        //USED
+        public void updateServiceTime(String phone, int service_time)
+        {
+        	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +service_time+" AND ID = "+phone);
+       	    ContentValues updatedValues = new ContentValues();
+            updatedValues.put("TOTAL_SERVICE_TIME", service_time);
+            
+            String where="PHONE_NUMBER = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{phone});
+          
+        } 
+        
+        //for all customer - not yet USED
+        public void updateWaitTime(int i, int wait_time)
+        {
+        	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +wait_time+" AND ID = "+i);
+       	    ContentValues updatedValues = new ContentValues();
+            updatedValues.put("WAITING_TIME", wait_time);
+            
+            String where="_ID = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{Integer.toString(i+1)});
+          
+        }        
+        
+        
+        public int getWaitTime(int id){
+        	int st=0;
+        	id=id+1;
+        	Log.i(LOG,"GETTING WAIT TABLE CUSTOMER WITH ID = "+id);
+       	 	String query="SELECT WAITING_TIME FROM CUSTOMER WHERE _ID="+id+";";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			st = Integer.parseInt(cursor.getString(cursor.getColumnIndex("WAITING_TIME")));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return st;
+        }
+        
+        //USED
+        public String getStartTime(String customer){
+        	String st="";
+        	Log.i(LOG,"GETTING START TABLE CUSTOMER WITH ID = "+customer);
+       	 	String query="SELECT START_SERVICE_TIME FROM CUSTOMER WHERE PHONE_NUMBER='"+customer+"';";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			st = cursor.getString(cursor.getColumnIndex("START_SERVICE_TIME"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return st;
+        }
+        
+        //USED
+        public String getEndTime(String customer){
+        	String st="";
+        	Log.i(LOG,"GETTING END TABLE CUSTOMER WITH ID = "+customer);
+       	 	String query="SELECT END_SERVICE_TIME FROM CUSTOMER WHERE PHONE_NUMBER='"+customer+"';";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			st = cursor.getString(cursor.getColumnIndex("END_SERVICE_TIME"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return st;
+        }
+    	
+    	public String getCustomerPhone(int id){
+    		String phone="";
+    		id=id+1;
+        	Log.i(LOG,"GETTING PHONE NUMBER TABLE CUSTOMER WITH ID = "+id);
+       	 	String query="SELECT PHONE_NUMBER FROM CUSTOMER WHERE _ID="+id+";";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			phone = cursor.getString(cursor.getColumnIndex("PHONE_NUMBER"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return phone;
+        }
+        
+        public ArrayList<String> getAllCustomers() {
+            ArrayList<String> yourStringValues = new ArrayList<String>();
+            Cursor result = db.rawQuery("SELECT PHONE_NUMBER FROM CUSTOMER WHERE ISQUEUED=1;",null);
+
+            if (result.moveToFirst()) {
+                do {
+                    yourStringValues.add(result.getString(result.getColumnIndex("PHONE_NUMBER")));
+                } while (result.moveToNext());
+            } else {
+                return null;
+            }
+            return yourStringValues;
+        }
+        
+        public String getWaitingTime(String phone_number){
+    		String time="";
+    		
+    		String query="SELECT WAITING_TIME FROM CUSTOMER WHERE PHONE_NUMBER='"+phone_number+"';";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			time = cursor.getString(cursor.getColumnIndex("WAITING_TIME"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return time;
+        }
+        
+        public int retrieveCustomerNumber(){
+        	int n=0;
+        	
+        	String query="SELECT COALESCE(MAX(_id),0) FROM CUSTOMER WHERE ISQUEUED=1;"; 
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			n = Integer.parseInt(cursor.getString(0));
+        	cursor.close();
+        	
+        	return n;
+        }
+        
+        public int retrieveCustomerDone(){
+        	int n=0;
+        	
+        	String query="SELECT COALESCE(MAX(_id),0) FROM CUSTOMER WHERE ISQUEUED=0;"; 
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			n = Integer.parseInt(cursor.getString(0));
+        	cursor.close();
+        	
+        	return n;
+        }
+           
+        //
+        public void deleteCustomer(String phone_number)
+        {
+           String where="PHONE_NUMBER=?";
+           
+           //int numberOFEntriesDeleted= db.delete("CUSTOMER", where, new String[]{phone_number}) ;
+           db.delete("CUSTOMER", where, new String[]{phone_number}) ;
+           Toast.makeText(context, "Customer Transaction Ended", Toast.LENGTH_LONG).show();
+      
+           //return numberOFEntriesDeleted;
+        }
+       
+        //HOW 
+        public void updateQueuePosition(String phone, int queue_position)
+        {
+            ContentValues updatedValues = new ContentValues();
+            updatedValues.put("QUEUE_POSITION", queue_position);
+            
+            String where="PHONE_NUMBER = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{phone});
+          
+        }
+        
+        public int getQueuePosn(String phone){
+    		int et=0;
+    		
+    		Log.i(LOG,"GETTING Q POSN TABLE CUSTOMER WITH phone = "+phone);
+       	 	String query="SELECT QUEUE_POSITION FROM CUSTOMER WHERE PHONE_NUMBER='"+phone+"';";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			et = Integer.parseInt(cursor.getString(cursor.getColumnIndex("QUEUE_POSITION")));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return et;
+        }
+
+
+        
+        //METHOD RETRIEVE SUM OF CUSTOMER SERVICE TIME
+        public int getServiceTimeSum()
+        {
+        	int tst = 0;
+            Cursor cursor=db.query("CUSTOMER", null, "ISQUEUED=0", null, null, null, null);
+            if(cursor.getCount()<1)
+                return tst;
+            
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
+            	tst += cursor.getInt(cursor.getColumnIndex("TOTAL_SERVICE_TIME"));
+            
+            return tst;
+        }
+        
+        //METHOD - INSERT TO TABLE QUEUE
+        //COL (QUEUE_LENGTH, AVERAGE_SERVICE_TIME)
+        public void insertVirtualQueue(int queue_length, int average_service_time, int user_id)
+        {
+          
+            ContentValues newValues = new ContentValues();
+            newValues.put("QUEUE_LENGTH", queue_length);
+            newValues.put("AVERAGE_SERVICE_TIME",average_service_time);
+            newValues.put("DATE",date);
+            newValues.put("USER_ID",user_id);
+			
+            
+           
+            // Insert the row into your table
+            db.insert("QUEUE", null, newValues);
+            //Toast.makeText(context, "Virtual Queue Info Saved", Toast.LENGTH_LONG).show();
+       
+   
+        }
+        
+        //METHOD - UPDATE VIRTUAL QUEUE LENGTH 
+        public void  updateQueueLength(int prev_queue_length, int queue_length)
+        {
+            ContentValues updatedValues = new ContentValues();
+            updatedValues.put("QUEUE_LENGTH", queue_length);
+            
+            String where="QUEUE_LENGTH = ?";
+            db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_queue_length)});
+          
+        }
+
+        //METHOD - UPDATE VIRTUAL QUEUE AVERAGE SERVICE TIME 
+        public void updateAverageServiceTime(int prev_average_service_time, int average_service_time)
+        {
+        	 Log.i(LOG,"UPDATING TABLE QUEUE: AST");
+        	 ContentValues updatedValues = new ContentValues();
+             updatedValues.put("AVERAGE_SERVICE_TIME", average_service_time);
+             
+             String where="AVERAGE_SERVICE_TIME = ?";
+             db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+          
+        }
+        
+        //METHOD - RETRIEVE AVERAGE_WAITING_TIME
+        public int retrieveAverageServiceTime(){
+        	//out of bounds (cursor)
+        	Log.i(LOG,"RETRIEVING AST");
+       	 	int ast=0;
+        	String query="SELECT AVERAGE_SERVICE_TIME FROM QUEUE;";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			ast = Integer.parseInt(cursor.getString(cursor.getColumnIndex("AVERAGE_SERVICE_TIME")));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return ast;
+        }
+        
+      //METHOD - RETRIEVE QUEUE_LENGTH
+        public int retrieveQueueLength(){
+        	
+        	Log.i(LOG,"RETRIEVING QL");
+       	 	int ql=0;
+        	String query="SELECT QUEUE_LENGTH FROM QUEUE;";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			ql = Integer.parseInt(cursor.getString(cursor.getColumnIndex("QUEUE_LENGTH")));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return ql;
+        }
+		
+		public void insertUser(String comp_add, String password, String comp_name, String comp_contact)
+        {
+          
+            ContentValues newValues = new ContentValues();
+            newValues.put("COMP_ADDRESS", comp_add);
+            newValues.put("PASSWORD", password);
+            newValues.put("COMP_NAME", comp_name);
+            newValues.put("COMP_CONTACT", comp_contact);
+			
+            
+           
+            // Insert the row into your table
+            db.insert("USER", null, newValues);
+            //Toast.makeText(context, "Virtual Queue Info Saved", Toast.LENGTH_LONG).show();
+       
+   
+        }
+		
+		public ArrayList<String> getAllUsers() {
+            ArrayList<String> yourStringValues = new ArrayList<String>();
+            Cursor result = db.rawQuery("SELECT PASSWORD FROM USER;",null);
+
+            if (result.moveToFirst()) {
+                do {
+                    yourStringValues.add(result.getString(result.getColumnIndex("PASSWORD")));
+                } while (result.moveToNext());
+            } else {
+                return null;
+            }
+            return yourStringValues;
+        }
+		
+		public int getUserID(String user){
+    		
+			int id=-1;
+			
+    		String query="SELECT _ID FROM USER WHERE PASSWORD=\""+user+"\";";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+   			id = Integer.parseInt(cursor.getString(cursor.getColumnIndex("_ID")));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+            return id;
+        }
+		
+		public String getUserName(){
+			
+			String name="";
+			
+			String query="SELECT COMP_NAME FROM USER";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+   			name = cursor.getString(cursor.getColumnIndex("COMP_NAME"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+        	return name;
+		}
+		//"PASSWORD text, COMP_NAME text, COMP_ADDRESS text, COMP_CONTACT integer not null);";
+		public String getPassword(){
+			
+			String pass="";
+			
+			String query="SELECT PASSWORD FROM USER";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+   			pass = cursor.getString(cursor.getColumnIndex("PASSWORD"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+        	return pass;
+		}
+		
+		public String getAddress(){
+			
+			String add="";
+			
+			String query="SELECT COMP_ADDRESS FROM USER";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    		add = cursor.getString(cursor.getColumnIndex("PASSWORD"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+        	return add;
+		}
+
+        
+}

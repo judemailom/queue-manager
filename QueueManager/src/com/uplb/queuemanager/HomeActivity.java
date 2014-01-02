@@ -4,7 +4,9 @@ import java.util.Calendar;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 public class HomeActivity extends Activity {
 	private TextView date,qstatus;
 	private Button close_queue;
+	private DatabaseAdapter databaseAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +46,34 @@ public class HomeActivity extends Activity {
 	}
 
 	public void queue_method(View view){
-		qstatus.setText("0 people in queue");
-		close_queue.setText("CLOSE QUEUE");
+		databaseAdapter = new DatabaseAdapter(getApplicationContext());
+        databaseAdapter.open();
+        String text = Integer.toString(databaseAdapter.retrieveCustomerNumber());
+		databaseAdapter.close();
+		
+		qstatus.setText(text+" people in queue");
+		close_queue.setText("QUEUE");
 		
 		//pano pag wala pa laman yung database? (TOAST? or deretso padin?)
 		Intent i=new Intent(HomeActivity.this, QueueActivity.class);
         startActivity(i);
 		
 	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.about:
+        	startActivity(new Intent(this, About.class));
+        	return true;
+        case R.id.help:
+        	startActivity(new Intent(this, Help.class));
+        	return true;
+        case R.id.action_settings:
+        	startActivity(new Intent(this, Settings.class));
+        	return true;
+        default:
+        return super.onOptionsItemSelected(item);
+       }
+	}
+	
 }

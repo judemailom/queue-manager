@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+//import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+//import android.content.SharedPreferences;
+//import android.content.SharedPreferences.Editor;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,15 +21,22 @@ public class MainActivity extends Activity {
 	private EditText password;
 	private ArrayList<String> userList = new ArrayList<String>();
 	
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    	
+    	/*Context context=this.getApplicationContext();
+    	SharedPreferences settings=context.getSharedPreferences("PREFERENCES", 0);
+    	boolean isLogged=settings.getBoolean("isLogged", false);
+    	*/
+    	
+    	super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         password = (EditText)this.findViewById(R.id.password);
     	
         DatabaseAdapter databaseAdapter = new DatabaseAdapter(getApplicationContext());
  		databaseAdapter.open();
- 		//databaseAdapter.insertUser("test", "test", "landbank"); //if(landbank-test != initialized) | password (md5)
+ 		
  		userList=databaseAdapter.getAllUsers();
  		if(userList==null){
  			AlertDialog.Builder welcome = new AlertDialog.Builder(this);
@@ -34,7 +44,8 @@ public class MainActivity extends Activity {
  			welcome.setTitle("Welcome!");
  			welcome.setPositiveButton("OK", new DialogInterface.OnClickListener() {
  			    public void onClick(DialogInterface dialog, int which) {
- 			        Intent intent = new Intent();
+ 			    	Intent intent = new Intent();
+ 			    	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
  			        intent.setClass(getApplicationContext(), Settings.class);
  			        startActivity(intent);
  			        dialog.cancel();
@@ -60,7 +71,7 @@ public class MainActivity extends Activity {
     	int flag=0;
     	if(userList!=null){
     	for(String user: userList){//user must be decrypted? (md5)
-	        if(password.getText().toString().equals("")){//user)){
+	        if(password.getText().toString().equals(user)){//pano kng pareho ng password? T_T
 	    		
 	        	//init queue here (lipat to sa queue pag may session na)
 	        	DatabaseAdapter databaseAdapter = new DatabaseAdapter(getApplicationContext());
@@ -70,8 +81,16 @@ public class MainActivity extends Activity {
 	     		
 	        	//move to next page
 	    		Intent i=new Intent(MainActivity.this, HomeActivity.class);
-	            startActivity(i);
+	    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			    startActivity(i);
 	            flag=1;
+	            
+	            /*Context context=this.getApplicationContext();
+	            SharedPreferences settings=context.getSharedPreferences("PREFERENCES", 0);
+	            SharedPreferences.Editor editor = settings.edit();
+	            editor.putBoolean("isLogged", true);
+	            editor.commit();
+	            */
 	            break;
 	    	}
     	}

@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="insertUser" key="selection"/>
+		<item value="Database" key="selection"/>
 		<list key="findhistory">
-			<item value="insertUser"/>
-			<item value="average"/>
-			<item value="insert"/>
-			<item value="QUEUE"/>
-			<item value="ISQUEUED"/>
-			<item value="toast"/>
-			<item value="row"/>
-			<item value="table"/>
+			<item value="database"/>
+			<item value="getWaitin"/>
+			<item value="updateServ"/>
+			<item value="update"/>
+			<item value="getWaitingTime"/>
+			<item value="settings"/>
+			<item value="user"/>
+			<item value="mgt"/>
 		</list>
 		<list key="replacehistory">
 		</list>

@@ -151,7 +151,7 @@ public class DatabaseAdapter
         //USED
         public void updateServiceTime(String phone, int service_time)
         {
-        	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +service_time+" AND ID = "+phone);
+        	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +service_time+" AND PHONE_NUMBER = "+phone);
        	    ContentValues updatedValues = new ContentValues();
             updatedValues.put("TOTAL_SERVICE_TIME", service_time);
             
@@ -161,14 +161,14 @@ public class DatabaseAdapter
         } 
         
         //for all customer - not yet USED
-        public void updateWaitTime(int i, int wait_time)
+        public void updateWaitTime(String phone, int wait_time)
         {
-        	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +wait_time+" AND ID = "+i);
+        	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +wait_time+" AND PHONE_NUMBER = "+phone);
        	    ContentValues updatedValues = new ContentValues();
             updatedValues.put("WAITING_TIME", wait_time);
             
-            String where="_ID = ?";
-            db.update("CUSTOMER",updatedValues, where, new String[]{Integer.toString(i+1)});
+            String where="PHONE_NUMBER = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{phone});
           
         }        
         
@@ -231,7 +231,7 @@ public class DatabaseAdapter
         
         public ArrayList<String> getAllCustomers() {
             ArrayList<String> yourStringValues = new ArrayList<String>();
-            Cursor result = db.rawQuery("SELECT PHONE_NUMBER FROM CUSTOMER;",null);
+            Cursor result = db.rawQuery("SELECT PHONE_NUMBER FROM CUSTOMER WHERE ISQUEUED=1;",null);
 
             if (result.moveToFirst()) {
                 do {
@@ -259,7 +259,7 @@ public class DatabaseAdapter
         public int retrieveCustomerNumber(){
         	int n=0;
         	
-        	String query="SELECT COALESCE(MAX(_id),0) FROM CUSTOMER WHERE ISQUEUED=1;"; 
+        	String query="SELECT COUNT(*) FROM CUSTOMER WHERE ISQUEUED=1;"; 
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			n = Integer.parseInt(cursor.getString(0));
@@ -271,7 +271,7 @@ public class DatabaseAdapter
         public int retrieveCustomerDone(){
         	int n=0;
         	
-        	String query="SELECT COALESCE(MAX(_id),0) FROM CUSTOMER WHERE ISQUEUED=0;"; 
+        	String query="SELECT COUNT(*) FROM CUSTOMER WHERE ISQUEUED=0;"; 
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			n = Integer.parseInt(cursor.getString(0));
@@ -315,6 +315,20 @@ public class DatabaseAdapter
         	cursor.close();
         	
             return et;
+        }
+        
+        public String getName(String phone){
+    		
+        	String name="";
+    		
+    		//Log.i(LOG,"GETTING Q POSN TABLE CUSTOMER WITH phone = "+phone);
+       	 	String query="SELECT CUSTOMER_NAME FROM CUSTOMER WHERE PHONE_NUMBER='"+phone+"';";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			name = cursor.getString(cursor.getColumnIndex("CUSTOMER_NAME"));
+    		cursor.close();
+        	
+            return name;
         }
 
 
@@ -451,6 +465,75 @@ public class DatabaseAdapter
         	
             return id;
         }
+		
+		public String getUserName(){
+			
+			String name="";
+			
+			String query="SELECT COMP_NAME FROM USER";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+   			name = cursor.getString(cursor.getColumnIndex("COMP_NAME"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+        	return name;
+		}
+		
+		public String getPassword(){
+			
+			String pass="";
+			
+			String query="SELECT PASSWORD FROM USER";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+   			pass = cursor.getString(cursor.getColumnIndex("PASSWORD"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+        	return pass;
+		}
+		
+		public String getAddress(){
+			
+			String add="";
+			
+			String query="SELECT COMP_ADDRESS FROM USER";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    		add = cursor.getString(cursor.getColumnIndex("COMP_ADDRESS"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+        	return add;
+		}
+		
+		public String getContact(){
+			
+			String contact="";
+			
+			String query="SELECT COMP_CONTACT FROM USER";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    		contact = cursor.getString(cursor.getColumnIndex("COMP_CONTACT"));
+    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
+        	cursor.close();
+        	
+        	return contact;
+		}
 
+		//"PASSWORD text, COMP_NAME text, COMP_ADDRESS text, COMP_CONTACT integer not null);";
+		public void updateUser(String prev_name, String curr_name, String pass, String add, String contact){
+        	//update query
+        	//Log.i(LOG,"UPDATING STATUS OF CUSTOMER = "+phone);
+       	 	ContentValues updatedValues = new ContentValues();
+            updatedValues.put("COMP_NAME", curr_name);
+            updatedValues.put("PASSWORD", pass);
+            updatedValues.put("COMP_ADDRESS", add);
+            updatedValues.put("COMP_CONTACT", contact);
+            
+            String where="COMP_NAME = ?";
+            db.update("USER",updatedValues, where, new String[]{prev_name});
+        }
         
 }
