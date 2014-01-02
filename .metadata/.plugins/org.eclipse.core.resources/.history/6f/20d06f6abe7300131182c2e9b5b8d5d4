@@ -120,7 +120,7 @@ public class SMSReceiver extends BroadcastReceiver
            
            abortBroadcast();
            }//end if
-           else if(match&&operation.equals("inquire\n")){
+           else if(operation.equals("inquire\n")&&match){
         	   
         	   //waiting time computation
               // DatabaseAdapter databaseAdapter = new DatabaseAdapter(context);

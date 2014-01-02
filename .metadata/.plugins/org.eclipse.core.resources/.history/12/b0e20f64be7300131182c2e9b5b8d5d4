@@ -62,7 +62,7 @@ public class SMSReceiver extends BroadcastReceiver
            }
            
            operation = operation.toLowerCase();
-           if(match&&operation.equals("enqueue\n")){
+           if(operation.equals("enqueue\n")&&match){
                 
            //get name from messageReceived
         	   
@@ -120,7 +120,7 @@ public class SMSReceiver extends BroadcastReceiver
            
            abortBroadcast();
            }//end if
-           else if(match&&operation.equals("inquire\n")){
+           else if(operation.equals("inquire\n")&&match){
         	   
         	   //waiting time computation
               // DatabaseAdapter databaseAdapter = new DatabaseAdapter(context);

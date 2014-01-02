@@ -48,21 +48,35 @@ public class SMSReceiver extends BroadcastReceiver
            databaseAdapter = new DatabaseAdapter(context);
            databaseAdapter.open();
            
-           //REGEX (Fname Lname ENQUEUE or Fname Lname INQUIRE)
-           Pattern pattern = Pattern.compile("([a-zA-Z]+\\s)+(ENQUEUE|INQUIRE|enqueue|inquire)\n");
+           //REGEX
+           Pattern pattern = 
+           Pattern.compile("([a-zA-Z]+\\s)+(ENQUEUE|INQUIRE|enqueue|inquire)\n");
 			
-		   String name = messageReceived.substring(0, messageReceived.lastIndexOf(" "));
+			//String test = console.readLine("Enter input string to search: ");
+           String name = messageReceived.substring(0, messageReceived.lastIndexOf(" "));
 		   String operation = messageReceived.substring(messageReceived.lastIndexOf(" ") + 1);
 			
-		   Matcher matcher = pattern.matcher(messageReceived);
+		   Matcher matcher = 
+           pattern.matcher(messageReceived);
 
-		   boolean match = false;
+		   boolean found = false;
            while (matcher.find()) {
-                   match = true;
+               // console.format("I found the text" +
+                   // " \"%s\" starting at " +
+                   // "index %d and ending at index %d.%n",
+                   // matcher.group(),
+                   // matcher.start(),
+                   // matcher.end());
+               found = true;
            }
+           //if(!found){
+               //console.format("No match found.%n");
+           //}
+			//else
+				//console.format("FOUND"+name+" "+operation+"%n");
            
-           operation = operation.toLowerCase();
-           if(match&&operation.equals("enqueue\n")){
+           //CHECK FORMAT OF MESSAGE (Apply regex)
+           if(operation.equals("enqueue\n")){
                 
            //get name from messageReceived
         	   
@@ -120,7 +134,7 @@ public class SMSReceiver extends BroadcastReceiver
            
            abortBroadcast();
            }//end if
-           else if(match&&operation.equals("inquire\n")){
+           else if(operation.equals("inquire\n")){
         	   
         	   //waiting time computation
               // DatabaseAdapter databaseAdapter = new DatabaseAdapter(context);

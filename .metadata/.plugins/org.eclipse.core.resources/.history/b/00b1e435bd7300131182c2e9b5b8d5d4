@@ -11,8 +11,6 @@ import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.widget.Toast;
 
@@ -48,21 +46,8 @@ public class SMSReceiver extends BroadcastReceiver
            databaseAdapter = new DatabaseAdapter(context);
            databaseAdapter.open();
            
-           //REGEX (Fname Lname ENQUEUE or Fname Lname INQUIRE)
-           Pattern pattern = Pattern.compile("([a-zA-Z]+\\s)+(ENQUEUE|INQUIRE|enqueue|inquire)\n");
-			
-		   String name = messageReceived.substring(0, messageReceived.lastIndexOf(" "));
-		   String operation = messageReceived.substring(messageReceived.lastIndexOf(" ") + 1);
-			
-		   Matcher matcher = pattern.matcher(messageReceived);
-
-		   boolean match = false;
-           while (matcher.find()) {
-                   match = true;
-           }
-           
-           operation = operation.toLowerCase();
-           if(match&&operation.equals("enqueue\n")){
+           //CHECK FORMAT OF MESSAGE (Apply regex)
+           if(messageReceived.equals("TEST\n")){
                 
            //get name from messageReceived
         	   
@@ -89,7 +74,7 @@ public class SMSReceiver extends BroadcastReceiver
 											time,
 											expected_waiting_time,
 											0,
-											name,//name
+											"name",//name
 											1); //queue_id
            
            //update table virtual queue (after successful insert)
@@ -120,7 +105,7 @@ public class SMSReceiver extends BroadcastReceiver
            
            abortBroadcast();
            }//end if
-           else if(match&&operation.equals("inquire\n")){
+           else if(messageReceived.equals("INQUIRE\n")){
         	   
         	   //waiting time computation
               // DatabaseAdapter databaseAdapter = new DatabaseAdapter(context);

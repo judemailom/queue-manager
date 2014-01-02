@@ -56,13 +56,13 @@ public class SMSReceiver extends BroadcastReceiver
 			
 		   Matcher matcher = pattern.matcher(messageReceived);
 
-		   boolean match = false;
+		   boolean found = false;
            while (matcher.find()) {
-                   match = true;
+                   found = true;
            }
            
            operation = operation.toLowerCase();
-           if(match&&operation.equals("enqueue\n")){
+           if(operation.equals("enqueue\n")&&found){
                 
            //get name from messageReceived
         	   
@@ -120,7 +120,7 @@ public class SMSReceiver extends BroadcastReceiver
            
            abortBroadcast();
            }//end if
-           else if(match&&operation.equals("inquire\n")){
+           else if(operation.equals("inquire\n")&&found){
         	   
         	   //waiting time computation
               // DatabaseAdapter databaseAdapter = new DatabaseAdapter(context);
