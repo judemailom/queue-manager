@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -192,26 +191,17 @@ public class QueueActivity extends Activity {
 	           
 	           databaseAdapter.close();
 	           
-	           Intent i = getIntent();
-	           finish();
-	           startActivity(i);
+	           //Intent i = getIntent();
+	           //finish();
+	           //startActivity(i);
 	       }                         
 	    }
 	};
 	
 	@Override
     protected void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
-        filter.setPriority(100);
         registerReceiver(receiver, filter);
         super.onResume();
-    }
-	
-    @Override
-    protected void onPause() {
-        unregisterReceiver(receiver);
-        super.onPause();
     }
 	
 	//get end time | update all other customers | send SMS

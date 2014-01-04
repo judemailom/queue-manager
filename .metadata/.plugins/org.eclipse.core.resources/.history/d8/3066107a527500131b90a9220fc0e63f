@@ -202,7 +202,7 @@ public class QueueActivity extends Activity {
 	@Override
     protected void onResume() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        filter.addAction(android.provider.Telephony.SMS_RECEIVED);
         filter.setPriority(100);
         registerReceiver(receiver, filter);
         super.onResume();

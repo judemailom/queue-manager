@@ -202,16 +202,10 @@ public class QueueActivity extends Activity {
 	@Override
     protected void onResume() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        //filter.addAction(SendBroadcast.BROADCAST_ACTION);
         filter.setPriority(100);
         registerReceiver(receiver, filter);
         super.onResume();
-    }
-	
-    @Override
-    protected void onPause() {
-        unregisterReceiver(receiver);
-        super.onPause();
     }
 	
 	//get end time | update all other customers | send SMS
