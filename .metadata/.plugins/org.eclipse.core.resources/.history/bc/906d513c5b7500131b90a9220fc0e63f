@@ -153,12 +153,8 @@ public class QueueActivity extends Activity {
 	           }
 	           
 	           
+	           
 	           abortBroadcast();
-	           
-	           Intent i = getIntent();
-	           finish();
-	           startActivity(i);
-	           
 	           }//end if
 	           else if(match&&operation.equals("inquire\n")){
 	        	   
@@ -217,12 +213,16 @@ public class QueueActivity extends Activity {
 	            	   e.printStackTrace();
 	               }
 	               abortBroadcast();
-	           }
+	           }*/
 	           
 	           else
 	        	   Log.i(LOG,"Wrong SMS format!");
 	           
 	           databaseAdapter.close();
+	           
+	           Intent i = getIntent();
+	           finish();
+	           startActivity(i);
 	       }                         
 	    }
 	};

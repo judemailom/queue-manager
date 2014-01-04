@@ -98,7 +98,7 @@ public class QueueActivity extends Activity {
 	           }
 	           
 	           operation = operation.toLowerCase();
-	           if(match&&operation.equals("enqueue\n")&& !duplicate){//&& !duplicate
+	           if(match&&operation.equals("enqueue\n")){//&& !duplicate
 	                
 	           //get name from messageReceived
 	        	   
@@ -153,12 +153,8 @@ public class QueueActivity extends Activity {
 	           }
 	           
 	           
+	           
 	           abortBroadcast();
-	           
-	           Intent i = getIntent();
-	           finish();
-	           startActivity(i);
-	           
 	           }//end if
 	           else if(match&&operation.equals("inquire\n")){
 	        	   
@@ -201,7 +197,7 @@ public class QueueActivity extends Activity {
 	               abortBroadcast();
 	           }
 	           
-	           else if(duplicate){
+	           /*else if(duplicate){
 	        	   String info_message = "Sorry but you are already on the queue.";
 	               
 	        	   //prompt regarding sent information message
@@ -217,12 +213,16 @@ public class QueueActivity extends Activity {
 	            	   e.printStackTrace();
 	               }
 	               abortBroadcast();
-	           }
+	           }*/
 	           
 	           else
 	        	   Log.i(LOG,"Wrong SMS format!");
 	           
 	           databaseAdapter.close();
+	           
+	           Intent i = getIntent();
+	           finish();
+	           startActivity(i);
 	       }                         
 	    }
 	};

@@ -9961,3 +9961,21 @@ Java Model Exception: Java Model Status [Timed out while retrieving the attached
 	at org.eclipse.jface.text.TextViewerHoverManager$4.run(TextViewerHoverManager.java:166)
 !SUBENTRY 1 org.eclipse.jdt.core 4 1012 2014-01-04 23:01:53.778
 !MESSAGE Timed out while retrieving the attached javadoc for TableLayout {key=Landroid/widget/TableLayout;} [in TableLayout.class [in android.widget [in C:\Users\Jude\Downloads\Programs\Installer\adt-bundle-windows-x86_64\sdk\platforms\android-17\android.jar]]] 
+
+!ENTRY org.eclipse.jdt.ui 4 10001 2014-01-04 23:23:57.156
+!MESSAGE Internal Error
+!STACK 1
+Java Model Exception: Java Model Status [Timed out while retrieving the attached javadoc for ContextWrapper [in ContextWrapper.class [in android.content [in C:\Users\Jude\Downloads\Programs\Installer\adt-bundle-windows-x86_64\sdk\platforms\android-17\android.jar]]] ]
+	at org.eclipse.jdt.internal.core.JavaElement.getURLContents(JavaElement.java:808)
+	at org.eclipse.jdt.internal.core.BinaryType.getJavadocContents(BinaryType.java:1037)
+	at org.eclipse.jdt.internal.core.BinaryMethod.getAttachedJavadoc(BinaryMethod.java:639)
+	at org.eclipse.jdt.internal.ui.text.javadoc.JavadocContentAccess2.getHTMLContent(JavadocContentAccess2.java:463)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover.getHoverInfo(JavadocHover.java:619)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover.internalGetHoverInfo(JavadocHover.java:565)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover.getHoverInfo2(JavadocHover.java:557)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:129)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:85)
+	at org.eclipse.jface.text.TextViewerHoverManager$4.run(TextViewerHoverManager.java:166)
+!SUBENTRY 1 org.eclipse.jdt.core 4 1012 2014-01-04 23:23:57.156
+!MESSAGE Timed out while retrieving the attached javadoc for ContextWrapper [in ContextWrapper.class [in android.content [in C:\Users\Jude\Downloads\Programs\Installer\adt-bundle-windows-x86_64\sdk\platforms\android-17\android.jar]]] 

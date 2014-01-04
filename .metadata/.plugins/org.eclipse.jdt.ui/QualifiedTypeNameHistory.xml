@@ -32,4 +32,6 @@
 <fullyQualifiedTypeName name="android.view.KeyEvent"/>
 <fullyQualifiedTypeName name="java.util.regex.Pattern"/>
 <fullyQualifiedTypeName name="java.util.regex.Matcher"/>
+<fullyQualifiedTypeName name="android.content.BroadcastReceiver"/>
+<fullyQualifiedTypeName name="android.content.IntentFilter"/>
 </qualifiedTypeNameHistroy>

@@ -211,7 +211,7 @@ public class QueueActivity extends Activity {
 	            	   
 	            	   // Show the toast  like in above screen shot
 	            	   //Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
-	            	   //Toast.makeText(context, info_message, Toast.LENGTH_LONG).show();
+	            	   Toast.makeText(context, info_message, Toast.LENGTH_LONG).show();
 	               }catch (Exception e) {
 	            	   Toast.makeText(context,"SMS failed, please try again.",Toast.LENGTH_LONG).show();
 	            	   e.printStackTrace();

@@ -98,7 +98,7 @@ public class QueueActivity extends Activity {
 	           }
 	           
 	           operation = operation.toLowerCase();
-	           if(match&&operation.equals("enqueue\n")&& !duplicate){//&& !duplicate
+	           if(match&&operation.equals("enqueue\n")){//&&
 	                
 	           //get name from messageReceived
 	        	   
@@ -153,12 +153,8 @@ public class QueueActivity extends Activity {
 	           }
 	           
 	           
+	           
 	           abortBroadcast();
-	           
-	           Intent i = getIntent();
-	           finish();
-	           startActivity(i);
-	           
 	           }//end if
 	           else if(match&&operation.equals("inquire\n")){
 	        	   
@@ -200,29 +196,14 @@ public class QueueActivity extends Activity {
 	               }
 	               abortBroadcast();
 	           }
-	           
-	           else if(duplicate){
-	        	   String info_message = "Sorry but you are already on the queue.";
-	               
-	        	   //prompt regarding sent information message
-	               try{
-	            	   SmsManager sms = SmsManager.getDefault(); 
-	            	   sms.sendTextMessage(senderPhoneNumber, null, info_message, null, null);
-	            	   
-	            	   // Show the toast  like in above screen shot
-	            	   //Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
-	            	   //Toast.makeText(context, info_message, Toast.LENGTH_LONG).show();
-	               }catch (Exception e) {
-	            	   Toast.makeText(context,"SMS failed, please try again.",Toast.LENGTH_LONG).show();
-	            	   e.printStackTrace();
-	               }
-	               abortBroadcast();
-	           }
-	           
 	           else
 	        	   Log.i(LOG,"Wrong SMS format!");
 	           
 	           databaseAdapter.close();
+	           
+	           Intent i = getIntent();
+	           finish();
+	           startActivity(i);
 	       }                         
 	    }
 	};
