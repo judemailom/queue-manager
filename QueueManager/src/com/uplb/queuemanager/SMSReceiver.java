@@ -164,6 +164,10 @@ public class SMSReceiver extends BroadcastReceiver
         	   Log.i(LOG,"Wrong SMS format!");
            
            databaseAdapter.close();
+           
+           //Intent i = getIntent();
+           //finish();
+           //startActivity(i);
        }                         
     }
 }

@@ -217,9 +217,9 @@ public class DatabaseAdapter
     	
     	public String getCustomerPhone(int id){
     		String phone="";
-    		id=id+1;
-        	Log.i(LOG,"GETTING PHONE NUMBER TABLE CUSTOMER WITH ID = "+id);
-       	 	String query="SELECT PHONE_NUMBER FROM CUSTOMER WHERE _ID="+id+";";
+    		//id=id+1;
+        	//Log.i(LOG,"GETTING PHONE NUMBER TABLE CUSTOMER WITH ID = "+id);
+       	 	String query="SELECT PHONE_NUMBER FROM CUSTOMER WHERE QUEUE_POSITION="+id+";";
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			phone = cursor.getString(cursor.getColumnIndex("PHONE_NUMBER"));

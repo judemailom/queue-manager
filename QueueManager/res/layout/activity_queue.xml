@@ -102,7 +102,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" 
                     android:layout_span="1"/>
 
-            </TableRow>
+              </TableRow>
 		 
 		 <!-- <TableRow
             	android:id="@+id/tableRow5"

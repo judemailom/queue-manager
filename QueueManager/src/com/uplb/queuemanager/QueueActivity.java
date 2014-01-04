@@ -51,6 +51,7 @@ public class QueueActivity extends Activity {
 			        //hide the row
 			        table.removeView(table.getChildAt(1));
 			        //DELETE THIS CUSTOMER
+			        int queue_index = databaseAdapter.getQueuePosn(customer);	
 			        databaseAdapter.updateStatus(customer);
 			        databaseAdapter.updateQueuePosition(customer,0);
 			        //compute for the waiting time of other customers
@@ -79,28 +80,27 @@ public class QueueActivity extends Activity {
 			        
 			        //UPDATE QUEUE POSITION OF OTHER CUSTOMERS
 			        if(databaseAdapter.getAllCustomers()!=null){
+			        
 			        for(String phone: databaseAdapter.getAllCustomers()){
-			        int posn=databaseAdapter.getQueuePosn(phone);
-            		int ewt = awt*(posn-2);
-			        databaseAdapter.updateQueuePosition(phone,posn-1);
-            		
-            		//SEND UPDATE MESSAGE TO ALL WHOS NOT DONE 
-			        if((posn-1)>0){
-	            		String confirmation_message = "Good day! Currently, there are only "+ (posn-1) +" customers to be served before you. Your estimated waiting time is " + ewt +" minutes. Thank you! -Management";
-	                    //prompt regarding sent confirmation message
-	                    try{
-	                 	   SmsManager sms = SmsManager.getDefault(); 
-	                 	   sms.sendTextMessage(phone, null, confirmation_message, null, null);
-	                 	   databaseAdapter.updateWaitTime(phone, ewt);
-	                 	   Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
-	                    }catch (Exception e) {
-	                 	   //Toast.makeText(getApplicationContext(),"SMS failed, please try again.",Toast.LENGTH_LONG).show();
-	                 	   e.printStackTrace();
-	                    }}//end SMS
-            		
-			        
-			        
-			        }}//end - for - if
+				        int posn=databaseAdapter.getQueuePosn(phone);
+	            		int ewt = awt*(posn-2);
+				        
+	            		//SEND UPDATE MESSAGE TO ALL WHOS NOT DONE BELOW THE ONE BEING SERVED 
+				        if(posn>queue_index && (posn-1)>0){
+				        	databaseAdapter.updateQueuePosition(phone,posn-1);
+		            		String confirmation_message = "Good day! Currently, there are only "+ (posn-1) +" customers to be served before you. Your estimated waiting time is " + ewt +" minutes. Thank you! -Management";
+		                    //prompt regarding sent confirmation message
+		                    try{
+		                 	   SmsManager sms = SmsManager.getDefault(); 
+		                 	   sms.sendTextMessage(phone, null, confirmation_message, null, null);
+		                 	   databaseAdapter.updateWaitTime(phone, ewt);
+		                 	   Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
+		                    }catch (Exception e) {
+		                 	   //Toast.makeText(getApplicationContext(),"SMS failed, please try again.",Toast.LENGTH_LONG).show();
+		                 	   e.printStackTrace();
+		                    }}//end SMS
+	            		}//end if
+			        }//end - for
 			        
 			        
 			        databaseAdapter.close();
@@ -116,6 +116,8 @@ public class QueueActivity extends Activity {
 	    return new View.OnClickListener() {
 	        public void onClick(View v) {
 	        	
+	        	databaseAdapter = new DatabaseAdapter(getApplicationContext());
+		        
 	        	if(serving_table.getChildAt(1)==null){//SQSSP
 	        	row.setVisibility(View.GONE);
 	       	 	
@@ -150,7 +152,7 @@ public class QueueActivity extends Activity {
 		        //or hard code the padding of button
 		        //google: how to move button to the left of the column
 		        
-		        tr.removeAllViews();
+		        tr.removeAllViews(); //row to be passed and added to the serving_table
 		        tr.addView(tv);
 		        tr.addView(tv2);
 		        tr.addView(btn);
@@ -164,11 +166,63 @@ public class QueueActivity extends Activity {
 		        String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
 		        time = time + "." + Integer.toString(d.get(Calendar.MILLISECOND));   
 		        
-		        databaseAdapter = new DatabaseAdapter(getApplicationContext());
 		        databaseAdapter.open();
 		        databaseAdapter.updateStartTime(customer, time);
+		        int queue_index = databaseAdapter.getQueuePosn(customer);	
 		        databaseAdapter.close();
-	        }
+		        
+		        if(queue_index!=1){//may nalampasan siya sa queue (yung mga wala pa)
+		        	//prompt those who are not yet there
+		        	for(int j=1;j<queue_index;j++){
+		        		databaseAdapter.open();
+		        		String phone2 = databaseAdapter.getCustomerPhone(j);
+		        		databaseAdapter.close();
+		        		
+		        		String prompt_message = "Other customers has been served since you are not yet here. You will be priority once you arrived. Thank you! -Management";
+	                    //prompt regarding sent confirmation message
+	                    try{
+	                 	   SmsManager sms = SmsManager.getDefault(); 
+	                 	   sms.sendTextMessage(phone2, null, prompt_message, null, null);
+	                 	   Toast.makeText(getApplicationContext(), "Prompt SMS Sent to " + phone2, Toast.LENGTH_LONG).show();
+	                    }catch (Exception e) {
+	                 	   e.printStackTrace();
+	                    }}//end SMS
+		        		
+		        	}
+		        }
+		        
+	        		/*else if(serving_table.getChildAt(1)==null && swap.getText()=="Swap UP"){
+	        		//not sure if condition is correct (kailangan ba di siya nagsserve para magswap?)
+	        		//how will you display the change?
+	        		
+	        		//View row1 = queue_table.getChildAt(i);
+	        		//View row2 = queue_table.getChildAt(i-1);
+	        		//queue_table.removeViewAt(i);
+	        		//queue_table.removeViewAt(i-1);
+	        		//queue_table.addView(row2, i);
+	        		//queue_table.addView(row1, i-1);
+	        		int i = queue_table.indexOfChild(row);
+	        		View row2 = queue_table.getChildAt(i);
+	        		View row1 = queue_table.getChildAt(i-1);
+	        		queue_table.removeViewAt(i);
+	        		queue_table.removeViewAt(i-1);
+	        		queue_table.addView(row2, i-1);
+	        		queue_table.addView(row1, i);
+	        		
+	        		//update details of row
+	        		//how to access button above swap T_T
+	        		//if(i==2)
+	        		//	swap.setText("Serve");
+	        		
+	        		//swap queue_position in database
+	        		databaseAdapter.open();
+	        		int cust_posn1 = databaseAdapter.getQueuePosn(customer);
+	        		String customer2 = databaseAdapter.getCustomerPhone(cust_posn1+1);
+	        		databaseAdapter.updateQueuePosition(customer, cust_posn1+1);
+	        		databaseAdapter.updateQueuePosition(customer2, cust_posn1);
+	        		databaseAdapter.close();
+	 		        
+	        	}*/
 	        	else
 	        		 Toast.makeText(getApplicationContext(), "You are still serving a customer." , Toast.LENGTH_LONG).show();
 	        }
@@ -211,7 +265,7 @@ public class QueueActivity extends Activity {
 		        
 		        tv.setText(databaseAdapter.getName(customer));
 		        tv2.setText("Waiting time: "+time+" mins.");
-		        img.setText("Start");
+		        img.setText("Serve");
 		        
 		        databaseAdapter.close();
 		        
