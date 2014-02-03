@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -17,16 +16,11 @@ import android.content.IntentFilter;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
-//import android.graphics.Color;
-//import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-//import android.view.ViewGroup;
-//import android.view.View.OnClickListener;
 import android.widget.Button;
-//import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
@@ -35,7 +29,6 @@ import android.widget.Toast;
 
 public class QueueActivity extends Activity {
 	
-	//private static final String LOG = "com.uplb.queuemanager";
 	private TableLayout table, serving_table;
 	private ArrayList<String> customerList;
 	private DatabaseAdapter databaseAdapter;
@@ -98,120 +91,105 @@ public class QueueActivity extends Activity {
 	           }
 	           
 	           operation = operation.toLowerCase();
-	           if(match&&operation.equals("enqueue\n")&& !duplicate){//&& !duplicate
+	           if(match&&operation.equals("enqueue\n")&& !duplicate){
 	                
-	           //get name from messageReceived
-	        	   
 	           //waiting time computation
-	           //kung average dapat ang iccount lang ay yung mga may service time -> ISQUEUED =0
 	           int average_service_time = 0;
-			   int service_time_sum = databaseAdapter.getServiceTimeSum();
+			   int service_time_sum = databaseAdapter.getServiceTimeSum(); //moving average with intervals of 2
 			   int custDone = databaseAdapter.retrieveCustomerDone();
 	           int queue_length = databaseAdapter.retrieveCustomerNumber();
-	           if(custDone!=0)
-	        	   average_service_time=service_time_sum/custDone;
+	           if(custDone>1)
+	        	   average_service_time=service_time_sum/2;
 	           else
-	        	   average_service_time=10; //initial value: 10mins (how to determine)
+	        	   average_service_time=10; //initial value: 10mins (how to determine?)
 	           
 	           int expected_waiting_time = average_service_time*queue_length; 
 	           
-	           //store info to DB (check for duplicates, PK: phone_number)
 	           Calendar d = Calendar.getInstance();
 	   		   String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
 		       time = time + "." + Integer.toString(d.get(Calendar.MILLISECOND));   
 		        
-			   databaseAdapter.insertCustomer(senderPhoneNumber,
+			   databaseAdapter.insertCustomer(senderPhoneNumber,		//insert user info to database
 												queue_length+1,
 												time,
-												expected_waiting_time,
+												expected_waiting_time,		
 												0,
-												name,//name
-												1); //queue_id
+												name,
+												1); //queue_id (queue_table)
 	           
 	           //update table virtual queue (after successful insert)
 	           //QUEUE TABLE (di pa sure kung kailangan)
 			   databaseAdapter.updateQueueLength(queue_length, queue_length+1);
 	           String mgt = databaseAdapter.getUserName();
 	           
-	           //customer number
 	           String total_customer_num = Integer.toString(queue_length);
 	           String estimated_waiting_time = Integer.toString(expected_waiting_time);
 	           
 	           //send confirmation message
 	           String confirmation_message = "Good day! You are now in the line. Currently, there are "+ total_customer_num +" customers to be served before you. Your estimated waiting time is " + estimated_waiting_time +" minutes. Thank you! -" +mgt+ " Management";
 	           
-	           //prompt regarding sent confirmation message
 	           try{
 	        	   SmsManager sms = SmsManager.getDefault(); 
 	        	   sms.sendTextMessage(senderPhoneNumber, null, confirmation_message, null, null);
 	        	   
-	        	   // Show the toast  like in above screen shot
-	        	   Toast.makeText(context, "Confirmation SMS Sent to " + senderPhoneNumber, Toast.LENGTH_LONG).show();
+	        	   //prompt regarding sent confirmation message
+		           Toast.makeText(context, "Confirmation SMS Sent to " + senderPhoneNumber, Toast.LENGTH_LONG).show();
 	           }catch (Exception e) {
-	        	   Toast.makeText(context,"SMS failed, please try again.",Toast.LENGTH_LONG).show();
 	        	   e.printStackTrace();
 	           }
 	           
 	           
-	           abortBroadcast();
+	           abortBroadcast();		//prevents inbox from receiving the message
 	           
 	           Intent i = getIntent();
 	           finish();
-	           startActivity(i);
+	           startActivity(i);		//restart the activity to view changes
+	           
 	           
 	           }//end if
-	           else if(match&&operation.equals("inquire\n")){
+	           else if(match&&operation.equals("inquire\n")){ 	//inquire will be for customers not in the queue yet
 	        	   
 	        	   //waiting time computation
-	              // DatabaseAdapter databaseAdapter = new DatabaseAdapter(context);
-	              // databaseAdapter.open();
-	               //kung average dapat ang iccount lang ay yung mga may service time -> ISQUEUED =0
 	               int average_service_time = 0;
-	    		   int service_time_sum = databaseAdapter.getServiceTimeSum(); //assumption: service time/customer > 1 min
+	    		   int service_time_sum = databaseAdapter.getServiceTimeSum(); //moving average with intervals of 2 //assumption: service time/customer > 1 min
 	    		   int custDone = databaseAdapter.retrieveCustomerDone();
 	               int queue_length = databaseAdapter.retrieveCustomerNumber();
-	               if(custDone!=0)
-	            	   average_service_time=service_time_sum/custDone;
-	               else
-	            	   average_service_time=10; //initial value: 10mins (how to determine)
+	               if(custDone>1)
+		        	   average_service_time=service_time_sum/2;
+		           else
+		        	   average_service_time=10; //initial value: 10mins (how to determine?)
 	               
 	               int expected_waiting_time = average_service_time*queue_length; 
 	               String mgt = databaseAdapter.getUserName();
-	               //databaseAdapter.close();
 	               
-	               //customer number
 	               String total_customer_num = Integer.toString(queue_length);
 	               String estimated_waiting_time = Integer.toString(expected_waiting_time);
-	               //databaseAdapter.updateWaitTime(senderPhoneNumber, expected_waiting_time);
-	               //send confirmation message
+	               
+	               //send information message
 	               String info_message = "Good day! Currently, there are "+ total_customer_num +" customers on the line. Estimated waiting time is " + estimated_waiting_time +" minutes. If you want to be enqueued just reply with this format: FIRST_NAME [space] LAST _NAME [space] ENQUEUE. Thank you! -" +mgt+ " Management";
 	               
-	        	   //prompt regarding sent information message
-	               try{
+	        	   try{
 	            	   SmsManager sms = SmsManager.getDefault(); 
 	            	   sms.sendTextMessage(senderPhoneNumber, null, info_message, null, null);
 	            	   
-	            	   // Show the toast  like in above screen shot
-	            	   Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
-	            	   //Toast.makeText(context, info_message, Toast.LENGTH_LONG).show();
+	            	   //prompt regarding sent information message
+		               Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
 	               }catch (Exception e) {
 	            	   Toast.makeText(context,"SMS failed, please try again.",Toast.LENGTH_LONG).show();
 	            	   e.printStackTrace();
 	               }
-	               abortBroadcast();
+	               abortBroadcast();		//prevents inbox from receiving the message
 	           }
 	           
 	           else if(duplicate){
 	        	   String info_message = "Sorry but you are already on the queue.";
 	               
-	        	   //prompt regarding sent information message
-	               try{
+	        	   try{
 	            	   SmsManager sms = SmsManager.getDefault(); 
 	            	   sms.sendTextMessage(senderPhoneNumber, null, info_message, null, null);
 	            	   
-	            	   // Show the toast  like in above screen shot
-	            	   //Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
-	            	   //Toast.makeText(context, info_message, Toast.LENGTH_LONG).show();
+	            	   //prompt regarding sent information message
+		               //Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
 	               }catch (Exception e) {
 	            	   Toast.makeText(context,"SMS failed, please try again.",Toast.LENGTH_LONG).show();
 	            	   e.printStackTrace();
@@ -254,13 +232,14 @@ public class QueueActivity extends Activity {
 			        databaseAdapter.open();
 			        databaseAdapter.updateEndTime(customer, time);
 			        
-			        //hide the row
-			        table.removeView(table.getChildAt(1));
+			        table.removeView(table.getChildAt(1));		//delete the row			        
+			        
 			        //DELETE THIS CUSTOMER
 			        int queue_index = databaseAdapter.getQueuePosn(customer);	
 			        databaseAdapter.updateStatus(customer);
 			        databaseAdapter.updateQueuePosition(customer,0);
-			        //compute for the waiting time of other customers
+			        
+			        //compute waiting time of other customers
 			        String st = databaseAdapter.getStartTime(customer);
 			        String et = databaseAdapter.getEndTime(customer);
 			        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -275,49 +254,41 @@ public class QueueActivity extends Activity {
 						e.printStackTrace();
 					}
 			        
-			        //REF Queue.java -> line 73-75
 			        //compute | update estimated waiting time | formula
 			        int sts = databaseAdapter.getServiceTimeSum(); 
 			        int custDone = databaseAdapter.retrieveCustomerDone();	
 			        int awt = sts/custDone; //average waiting (service) time
-			        //databaseAdapter.updateAverageServiceTime(0, awt); //better yet use the date & fkey (or any ID of the current queue)
+			        
 			        //UPDATE NEW WAITING TIME -> consider queue table
             		//do i really need queue table T_T
 			        
-			        //UPDATE QUEUE POSITION OF OTHER CUSTOMERS
-			        if(databaseAdapter.getAllCustomers()!=null){
-			        
-			        for(String phone: databaseAdapter.getAllCustomers()){
-				        int posn=databaseAdapter.getQueuePosn(phone);
-	            		int ewt = awt*(posn-2);
+			        if(databaseAdapter.getAllCustomers()!=null){	//UPDATE QUEUE POSITION OF OTHER CUSTOMERS
 				        
-	            		//SEND UPDATE MESSAGE TO ALL WHOS NOT DONE BELOW THE ONE BEING SERVED 
-				        if(posn>queue_index && (posn-1)>0){
-				        	databaseAdapter.updateQueuePosition(phone,posn-1);
-		            		String confirmation_message = "Good day! Currently, there are only "+ (posn-1) +" customers to be served before you. Your estimated waiting time is " + ewt +" minutes. Thank you! -Management";
-		                    //prompt regarding sent confirmation message
-		                    try{
-		                 	   SmsManager sms = SmsManager.getDefault(); 
-		                 	   sms.sendTextMessage(phone, null, confirmation_message, null, null);
-		                 	   databaseAdapter.updateWaitTime(phone, ewt);
-		                 	   Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
-		                    }catch (Exception e) {
-		                 	   //Toast.makeText(getApplicationContext(),"SMS failed, please try again.",Toast.LENGTH_LONG).show();
-		                 	   e.printStackTrace();
-		                    }}//end SMS
-	            		}//end if
-			        }//end - for
-			        
-			        
-			        databaseAdapter.close();
-			        
-			        
-			      
-	        }
+				        for(String phone: databaseAdapter.getAllCustomers()){
+					        int posn=databaseAdapter.getQueuePosn(phone);
+		            		int ewt = awt*(posn-2);
+					        
+		            		//SEND UPDATE MESSAGE TO ALL WHOS NOT DONE BELOW THE ONE BEING SERVED 
+					        if(posn>queue_index && (posn-1)>0){
+					        	databaseAdapter.updateQueuePosition(phone,posn-1);
+			            		String confirmation_message = "Good day! Currently, there are only "+ (posn-1) +" customers to be served before you. Your estimated waiting time is " + ewt +" minutes. Thank you! -Management";
+			                    try{
+			                 	   SmsManager sms = SmsManager.getDefault(); 
+			                 	   sms.sendTextMessage(phone, null, confirmation_message, null, null);
+			                 	   databaseAdapter.updateWaitTime(phone, ewt);
+			                 	   //prompt regarding sent confirmation message
+				                   Toast.makeText(getApplicationContext(), "Update SMS Sent to " + phone, Toast.LENGTH_LONG).show();
+			                    }catch (Exception e) {
+			                 	   //Toast.makeText(getApplicationContext(),"SMS failed, please try again.",Toast.LENGTH_LONG).show();
+			                 	   e.printStackTrace();
+			                    }}//end SMS
+		            		}//end if
+				        }//end - for
+				   databaseAdapter.close();
+			  	}//end if
 	    };
 	}
 	
-	//layout
 	View.OnClickListener click(final String customer, final String time, final TableRow row, final TableLayout serving_table, final TextView tv, final TextView tv2, final Button btn, final TableRow tr, final TableLayout queue_table, final ArrayList<String> customerList)  {
 	    return new View.OnClickListener() {
 	        public void onClick(View v) {
@@ -327,7 +298,7 @@ public class QueueActivity extends Activity {
 	        	if(serving_table.getChildAt(1)==null){//SQSSP
 	        	row.setVisibility(View.GONE);
 	       	 	
-	        	//update color of other customers (may mali)
+	        	//update color of other customers (error: minsan di nag-aalternate pag mali yung nadelete)
 		        for(int i=1;i<table.getChildCount();i++){
 		        	if((i+1)%2==0)
 		        		queue_table.getChildAt(i).setBackgroundResource(R.color.gray);
@@ -354,11 +325,8 @@ public class QueueActivity extends Activity {
 		        tv.setPadding(10,0,0,0);
 		        tv2.setPadding(15,0,0,0);
 		        btn.setGravity(Gravity.CENTER);
-		        //find why they are not synchronized when it comes to layout (when in fact they are the same)
-		        //or hard code the padding of button
-		        //google: how to move button to the left of the column
 		        
-		        tr.removeAllViews(); //row to be passed and added to the serving_table
+		        tr.removeAllViews(); 
 		        tr.addView(tv);
 		        tr.addView(tv2);
 		        tr.addView(btn);
@@ -377,7 +345,7 @@ public class QueueActivity extends Activity {
 		        int queue_index = databaseAdapter.getQueuePosn(customer);	
 		        databaseAdapter.close();
 		        
-		        if(queue_index!=1){//may nalampasan siya sa queue (yung mga wala pa)
+		        if(queue_index!=1){	//if the customer served is not the first customer in the queue
 		        	//prompt those who are not yet there
 		        	for(int j=1;j<queue_index;j++){
 		        		databaseAdapter.open();
@@ -385,14 +353,15 @@ public class QueueActivity extends Activity {
 		        		databaseAdapter.close();
 		        		
 		        		String prompt_message = "Other customers has been served since you are not yet here. You will be priority once you arrived. Thank you! -Management";
-	                    //prompt regarding sent confirmation message
 	                    try{
 	                 	   SmsManager sms = SmsManager.getDefault(); 
 	                 	   sms.sendTextMessage(phone2, null, prompt_message, null, null);
-	                 	   Toast.makeText(getApplicationContext(), "Prompt SMS Sent to " + phone2, Toast.LENGTH_LONG).show();
+	                 	   //prompt regarding sent confirmation message
+		                   Toast.makeText(getApplicationContext(), "Prompt SMS Sent to " + phone2, Toast.LENGTH_LONG).show();
 	                    }catch (Exception e) {
 	                 	   e.printStackTrace();
-	                    }}//end SMS
+	                    }//end sms
+	                    }//end loop
 		        		
 		        	}
 		        }

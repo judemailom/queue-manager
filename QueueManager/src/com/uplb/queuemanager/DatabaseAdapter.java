@@ -15,24 +15,23 @@ import android.widget.Toast;
 
 public class DatabaseAdapter 
 {
-		private static final String LOG = "com.uplb.queuemanager";
 		
-        static final String DATABASE_NAME = "queuemanager.db";
+		private static final String LOG = "com.uplb.queuemanager";
+		static final String DATABASE_NAME = "queuemanager.db";
         static final int DATABASE_VERSION = 2;
         public static final int NAME_COLUMN = 1;
         
-        //Date current = new Date();
-		final Calendar c = Calendar.getInstance();
+        final Calendar c = Calendar.getInstance();
 	    int yy = c.get(Calendar.YEAR);
 	    int mm = c.get(Calendar.MONTH);
 	    int dd = c.get(Calendar.DAY_OF_MONTH);
 
-  	    // set current date into textview
+  	    //set current date into textview
   	  	String date = (new StringBuilder()
   	    			.append(mm+1).append("-")
   	    			.append(dd).append("-").append(yy)).toString();
     
-        //COL (PHONE_NUMBER, QUEUE_POSTITION, ARRIVAL_TIME, WAITING_TIME, TOTAL_SERVICE_TIME, CUSTOMER_NAME, START_SERVICE_TIME, END_SERVICE_TIME, DATE, FKEY_ID)
+        //COL (PHONE_NUMBER, QUEUE_POSTITION, ARRIVAL_TIME(of message), WAITING_TIME(estimated waiting time from message to being served), TOTAL_SERVICE_TIME(computed waiting time, after being served, used for computation of others' waiting time), CUSTOMER_NAME, START_SERVICE_TIME, END_SERVICE_TIME, DATE, FKEY_ID)
         static final String DATABASE_CREATE_CUSTOMER = "create table if not exists CUSTOMER"+
                                      "(_ID integer PRIMARY KEY autoincrement,"+ 
                                      "PHONE_NUMBER text not null,QUEUE_POSITION integer," +
@@ -58,34 +57,58 @@ public class DatabaseAdapter
         private final Context context; 		//Context of the application using the database.
         private DatabaseHelper dbHelper;	//Database open/upgrade helper
         
-        //CONSTRUCTOR
+        /**
+         * Instantiates a new database adapter.
+         *
+         * @param _context the _context
+         */
         public  DatabaseAdapter(Context _context) 
         {
         		this.context = _context;
                 this.dbHelper = new DatabaseHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
-         //METHOD - OPEN DB  
-        public  DatabaseAdapter open() throws SQLException 
+        /**
+          * Opens the database.
+          *
+          * @return the database adapter
+          * @throws SQLException the sQL exception
+          */
+         public  DatabaseAdapter open() throws SQLException 
         {
         		db = this.dbHelper.getWritableDatabase();
                 return this;
         }
     
-        //METHOD - CLOSE DB  
+        /**
+         * Closes the database.
+         */
         public void close() 
         {
         	dbHelper.close();
         }
  
-        //METHOD - GET DB 
+        /**
+         * Gets the database instance.
+         *
+         * @return the database instance
+         */
         public  SQLiteDatabase getDatabaseInstance()
         {
                 return db;
         }
         
-        //METHOD - INSERT TO TABLE CUSTOMER
-        //COL (PHONE_NUMBER, QUEUE_POSTITION (i), ARRIVAL_TIME, WAITING_TIME (i), TOTAL_SERVICE_TIME (i), CUSTOMER_NAME, START/END(i))
+        /**
+         * Insert customer information to customer table.
+         *
+         * @param phone_number the phone number of the customer
+         * @param queue_position the queue position of the customer 
+         * @param arrival_time the arrival time of the customer
+         * @param waiting_time the waiting time of the customer
+         * @param total_service_time the total service time of the customer
+         * @param name the name of the customer
+         * @param queue_id the queue_id
+         */
         public void insertCustomer(String phone_number,
 									int queue_position, 
 									String arrival_time, 
@@ -115,9 +138,12 @@ public class DatabaseAdapter
    
          }
         
-        //USED
+        /**
+         * Update status of customer 0 - not in the queue, 1 - enqueued
+         *
+         * @param phone the phone number of the customer
+         */
         public void updateStatus(String phone){
-        	//update query
         	Log.i(LOG,"UPDATING STATUS OF CUSTOMER = "+phone);
        	 	ContentValues updatedValues = new ContentValues();
             updatedValues.put("ISQUEUED", 0);
@@ -126,9 +152,13 @@ public class DatabaseAdapter
             db.update("CUSTOMER",updatedValues, where, new String[]{phone});
         }
         
-        //USED
+        /**
+         * Update start time (transaction) of customer
+         *
+         * @param phone the phone number of the customer
+         * @param start the start transaction time of the customer
+         */
         public void updateStartTime(String phone, String start){
-        	//update query
         	Log.i(LOG,"UPDATING TABLE CUSTOMER WITH START = "+start+" AND Phone = "+phone);
        	 	ContentValues updatedValues = new ContentValues();
             updatedValues.put("START_SERVICE_TIME", start);
@@ -137,9 +167,13 @@ public class DatabaseAdapter
             db.update("CUSTOMER",updatedValues, where, new String[]{phone});
         }
         
-        //USED
+        /**
+         * Update end time (transaction) of customer
+         *
+         * @param phone the phone number of the customer
+         * @param end the end transaction time of the customer
+         */
         public void updateEndTime(String phone, String end){
-        	//update query
         	Log.i(LOG,"UPDATING TABLE CUSTOMER WITH END = "+end+" AND Phone = "+phone);
        	 	ContentValues updatedValues = new ContentValues();
             updatedValues.put("END_SERVICE_TIME", end);
@@ -148,7 +182,12 @@ public class DatabaseAdapter
             db.update("CUSTOMER",updatedValues, where, new String[]{phone});
         }
         
-        //USED
+        /**
+         * Update service time = end-start of customer
+         *
+         * @param phone the phone number of the customer
+         * @param service_time the service time of the customer
+         */
         public void updateServiceTime(String phone, int service_time)
         {
         	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +service_time+" AND PHONE_NUMBER = "+phone);
@@ -160,7 +199,12 @@ public class DatabaseAdapter
           
         } 
         
-        //for all customer - not yet USED
+        /**
+         * Updates estimated waiting time of customers who are not yet served
+         *
+         * @param phone the phone number of the customer
+         * @param wait_time the wait time of the customer
+         */
         public void updateWaitTime(String phone, int wait_time)
         {
         	Log.i(LOG,"UPDATING TABLE CUSTOMER: WITH VALUE OF ST= " +wait_time+" AND PHONE_NUMBER = "+phone);
@@ -173,21 +217,12 @@ public class DatabaseAdapter
         }        
         
         
-        public int getWaitTime(int id){
-        	int st=0;
-        	id=id+1;
-        	Log.i(LOG,"GETTING WAIT TABLE CUSTOMER WITH ID = "+id);
-       	 	String query="SELECT WAITING_TIME FROM CUSTOMER WHERE _ID="+id+";";
-    		Cursor cursor = db.rawQuery(query,null);
-    		if(cursor.moveToFirst())
-    			st = Integer.parseInt(cursor.getString(cursor.getColumnIndex("WAITING_TIME")));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
-        	
-            return st;
-        }
-        
-        //USED
+        /**
+         * Gets the start (transaction) time of the customer.
+         *
+         * @param customer the phone number of the customer
+         * @return the start time
+         */
         public String getStartTime(String customer){
         	String st="";
         	Log.i(LOG,"GETTING START TABLE CUSTOMER WITH ID = "+customer);
@@ -201,7 +236,12 @@ public class DatabaseAdapter
             return st;
         }
         
-        //USED
+        /**
+         * Gets the end (transaction) time of the customer.
+         *
+         * @param customer the phone number of the customer
+         * @return the end time
+         */
         public String getEndTime(String customer){
         	String st="";
         	Log.i(LOG,"GETTING END TABLE CUSTOMER WITH ID = "+customer);
@@ -209,26 +249,33 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			st = cursor.getString(cursor.getColumnIndex("END_SERVICE_TIME"));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
             return st;
         }
     	
-    	public String getCustomerPhone(int id){
+        /**
+         * Gets the customer phone number.
+         *
+         * @param id the queue position of the customer
+         * @return the customer phone number
+         */
+        public String getCustomerPhone(int id){	
     		String phone="";
-    		//id=id+1;
-        	//Log.i(LOG,"GETTING PHONE NUMBER TABLE CUSTOMER WITH ID = "+id);
-       	 	String query="SELECT PHONE_NUMBER FROM CUSTOMER WHERE QUEUE_POSITION="+id+";";
+    		String query="SELECT PHONE_NUMBER FROM CUSTOMER WHERE QUEUE_POSITION="+id+";";
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			phone = cursor.getString(cursor.getColumnIndex("PHONE_NUMBER"));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
             return phone;
         }
         
+        /**
+         * Gets all customers.
+         *
+         * @return all customers
+         */
         public ArrayList<String> getAllCustomers() {
             ArrayList<String> yourStringValues = new ArrayList<String>();
             Cursor result = db.rawQuery("SELECT PHONE_NUMBER FROM CUSTOMER WHERE ISQUEUED=1;",null);
@@ -243,6 +290,32 @@ public class DatabaseAdapter
             return yourStringValues;
         }
         
+        /**
+         * Gets all customers with specific date of transaction.
+         *
+         * @param date is the date of transaction
+         * @return all customers
+         */
+        public ArrayList<String> getAllCustomersByDate(String date) {
+            ArrayList<String> yourStringValues = new ArrayList<String>();
+            Cursor result = db.rawQuery("SELECT PHONE_NUMBER FROM CUSTOMER WHERE DATE='"+date+"';",null);
+
+            if (result.moveToFirst()) {
+                do {
+                    yourStringValues.add(result.getString(result.getColumnIndex("PHONE_NUMBER")));
+                } while (result.moveToNext());
+            } else {
+                return null;
+            }
+            return yourStringValues;
+        }
+        
+        /**
+         * Gets the waiting time.
+         *
+         * @param phone_number the phone number of the customer
+         * @return the waiting time
+         */
         public String getWaitingTime(String phone_number){
     		String time="";
     		
@@ -250,12 +323,16 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			time = cursor.getString(cursor.getColumnIndex("WAITING_TIME"));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
             return time;
         }
         
+        /**
+         * Retrieve total number of customers enqueued.
+         *
+         * @return the total number of customers enqueued
+         */
         public int retrieveCustomerNumber(){
         	int n=0;
         	
@@ -268,6 +345,11 @@ public class DatabaseAdapter
         	return n;
         }
         
+        /**
+         * Retrieve total number of customers done.
+         *
+         * @return the number of customers done
+         */
         public int retrieveCustomerDone(){
         	int n=0;
         	
@@ -280,19 +362,26 @@ public class DatabaseAdapter
         	return n;
         }
            
-        //
+        /**
+         * Delete customer. (not yet used)
+         *
+         * @param phone_number the phone_number
+         */
         public void deleteCustomer(String phone_number)
         {
            String where="PHONE_NUMBER=?";
            
-           //int numberOFEntriesDeleted= db.delete("CUSTOMER", where, new String[]{phone_number}) ;
            db.delete("CUSTOMER", where, new String[]{phone_number}) ;
            Toast.makeText(context, "Customer Transaction Ended", Toast.LENGTH_LONG).show();
       
-           //return numberOFEntriesDeleted;
         }
        
-        //HOW 
+        /**
+         * Updates queue position of the customers.
+         *
+         * @param phone the phone number of the customer
+         * @param queue_position the queue position
+         */
         public void updateQueuePosition(String phone, int queue_position)
         {
             ContentValues updatedValues = new ContentValues();
@@ -303,6 +392,12 @@ public class DatabaseAdapter
           
         }
         
+        /**
+         * Gets the queue position.
+         *
+         * @param phone the phone number
+         * @return the queue position
+         */
         public int getQueuePosn(String phone){
     		int et=0;
     		
@@ -311,18 +406,22 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			et = Integer.parseInt(cursor.getString(cursor.getColumnIndex("QUEUE_POSITION")));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
             return et;
         }
         
+        /**
+         * Gets the name of the customer.
+         *
+         * @param phone the phone number
+         * @return the name
+         */
         public String getName(String phone){
     		
         	String name="";
     		
-    		//Log.i(LOG,"GETTING Q POSN TABLE CUSTOMER WITH phone = "+phone);
-       	 	String query="SELECT CUSTOMER_NAME FROM CUSTOMER WHERE PHONE_NUMBER='"+phone+"';";
+    		String query="SELECT CUSTOMER_NAME FROM CUSTOMER WHERE PHONE_NUMBER='"+phone+"';";
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			name = cursor.getString(cursor.getColumnIndex("CUSTOMER_NAME"));
@@ -333,22 +432,33 @@ public class DatabaseAdapter
 
 
         
-        //METHOD RETRIEVE SUM OF CUSTOMER SERVICE TIME
+        /**
+         * Gets the sum of all service time of customers done in the queue.
+         *
+         * @return the service time sum
+         */
         public int getServiceTimeSum()
         {
         	int tst = 0;
-            Cursor cursor=db.query("CUSTOMER", null, "ISQUEUED=0", null, null, null, null);
+            Cursor cursor=db.query("CUSTOMER", null, "ISQUEUED=0", null, null, null, "END_SERVICE_TIME DESC","2");
             if(cursor.getCount()<1)
                 return tst;
             
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
             	tst += cursor.getInt(cursor.getColumnIndex("TOTAL_SERVICE_TIME"));
             
+            Log.i(LOG,"TOTAL SERVICE TIME = "+tst);
+       	 
             return tst;
         }
         
-        //METHOD - INSERT TO TABLE QUEUE
-        //COL (QUEUE_LENGTH, AVERAGE_SERVICE_TIME)
+        /**
+         * Insert virtual queue. (not yet used)
+         *
+         * @param queue_length the queue_length
+         * @param average_service_time the average_service_time
+         * @param user_id the user_id
+         */
         public void insertVirtualQueue(int queue_length, int average_service_time, int user_id)
         {
           
@@ -357,17 +467,17 @@ public class DatabaseAdapter
             newValues.put("AVERAGE_SERVICE_TIME",average_service_time);
             newValues.put("DATE",date);
             newValues.put("USER_ID",user_id);
-			
-            
-           
-            // Insert the row into your table
+
             db.insert("QUEUE", null, newValues);
-            //Toast.makeText(context, "Virtual Queue Info Saved", Toast.LENGTH_LONG).show();
-       
-   
+              
         }
         
-        //METHOD - UPDATE VIRTUAL QUEUE LENGTH 
+        /**
+         * Update queue length. (not yet used)
+         *
+         * @param prev_queue_length the prev_queue_length
+         * @param queue_length the queue_length
+         */
         public void  updateQueueLength(int prev_queue_length, int queue_length)
         {
             ContentValues updatedValues = new ContentValues();
@@ -378,7 +488,12 @@ public class DatabaseAdapter
           
         }
 
-        //METHOD - UPDATE VIRTUAL QUEUE AVERAGE SERVICE TIME 
+        /**
+         * Update average service time. (not yet used)
+         *
+         * @param prev_average_service_time the prev_average_service_time
+         * @param average_service_time the average_service_time
+         */
         public void updateAverageServiceTime(int prev_average_service_time, int average_service_time)
         {
         	 Log.i(LOG,"UPDATING TABLE QUEUE: AST");
@@ -390,22 +505,29 @@ public class DatabaseAdapter
           
         }
         
-        //METHOD - RETRIEVE AVERAGE_WAITING_TIME
+        /**
+         * Retrieve average service time. (not yet used)
+         *
+         * @return the int
+         */
         public int retrieveAverageServiceTime(){
-        	//out of bounds (cursor)
         	Log.i(LOG,"RETRIEVING AST");
        	 	int ast=0;
         	String query="SELECT AVERAGE_SERVICE_TIME FROM QUEUE;";
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			ast = Integer.parseInt(cursor.getString(cursor.getColumnIndex("AVERAGE_SERVICE_TIME")));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		
+    		cursor.close();
         	
             return ast;
         }
         
-      //METHOD - RETRIEVE QUEUE_LENGTH
+        /**
+         * Retrieve queue length. (not yet used)
+         *
+         * @return the int
+         */
         public int retrieveQueueLength(){
         	
         	Log.i(LOG,"RETRIEVING QL");
@@ -414,12 +536,20 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			ql = Integer.parseInt(cursor.getString(cursor.getColumnIndex("QUEUE_LENGTH")));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		
+    		cursor.close();
         	
             return ql;
         }
 		
+		/**
+		 * Insert user information to database.
+		 *
+		 * @param comp_add the company address
+		 * @param password the password
+		 * @param comp_name the company name
+		 * @param comp_contact the company contact number
+		 */
 		public void insertUser(String comp_add, String password, String comp_name, String comp_contact)
         {
           
@@ -429,15 +559,14 @@ public class DatabaseAdapter
             newValues.put("COMP_NAME", comp_name);
             newValues.put("COMP_CONTACT", comp_contact);
 			
-            
-           
-            // Insert the row into your table
             db.insert("USER", null, newValues);
-            //Toast.makeText(context, "Virtual Queue Info Saved", Toast.LENGTH_LONG).show();
-       
-   
         }
 		
+		/**
+		 * Gets the all users.
+		 *
+		 * @return the all user password
+		 */
 		public ArrayList<String> getAllUsers() {
             ArrayList<String> yourStringValues = new ArrayList<String>();
             Cursor result = db.rawQuery("SELECT PASSWORD FROM USER;",null);
@@ -452,6 +581,12 @@ public class DatabaseAdapter
             return yourStringValues;
         }
 		
+		/**
+		 * Gets the user id.
+		 *
+		 * @param user the user password
+		 * @return the user id
+		 */
 		public int getUserID(String user){
     		
 			int id=-1;
@@ -460,12 +595,16 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
    			id = Integer.parseInt(cursor.getString(cursor.getColumnIndex("_ID")));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
             return id;
         }
 		
+		/**
+		 * Gets the user company name.
+		 *
+		 * @return the user company name
+		 */
 		public String getUserName(){
 			
 			String name="";
@@ -474,12 +613,16 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
    			name = cursor.getString(cursor.getColumnIndex("COMP_NAME"));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
         	return name;
 		}
 		
+		/**
+		 * Gets the password.
+		 *
+		 * @return the password
+		 */
 		public String getPassword(){
 			
 			String pass="";
@@ -488,12 +631,16 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
    			pass = cursor.getString(cursor.getColumnIndex("PASSWORD"));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
         	return pass;
 		}
 		
+		/**
+		 * Gets the company address.
+		 *
+		 * @return the company address
+		 */
 		public String getAddress(){
 			
 			String add="";
@@ -502,12 +649,16 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     		add = cursor.getString(cursor.getColumnIndex("COMP_ADDRESS"));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
         	return add;
 		}
 		
+		/**
+		 * Gets the company contact number.
+		 *
+		 * @return the company contact number
+		 */
 		public String getContact(){
 			
 			String contact="";
@@ -516,17 +667,22 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     		contact = cursor.getString(cursor.getColumnIndex("COMP_CONTACT"));
-    		//db.update("QUEUE",updatedValues, where, new String[]{Integer.toString(prev_average_service_time)});
-        	cursor.close();
+    		cursor.close();
         	
         	return contact;
 		}
 
-		//"PASSWORD text, COMP_NAME text, COMP_ADDRESS text, COMP_CONTACT integer not null);";
+		/**
+		 * Update user.
+		 *
+		 * @param prev_name the previous name
+		 * @param curr_name the new name
+		 * @param pass the new password
+		 * @param add the new address
+		 * @param contact the new contact number
+		 */
 		public void updateUser(String prev_name, String curr_name, String pass, String add, String contact){
-        	//update query
-        	//Log.i(LOG,"UPDATING STATUS OF CUSTOMER = "+phone);
-       	 	ContentValues updatedValues = new ContentValues();
+        	ContentValues updatedValues = new ContentValues();
             updatedValues.put("COMP_NAME", curr_name);
             updatedValues.put("PASSWORD", pass);
             updatedValues.put("COMP_ADDRESS", add);

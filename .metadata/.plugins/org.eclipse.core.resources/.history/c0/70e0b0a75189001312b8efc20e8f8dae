@@ -1,0 +1,82 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".LogsActivity" >
+
+	<LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+		
+     	<TextView
+     	  android:id="@+id/log_date"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:gravity="left"
+          android:paddingLeft="10dp"
+          android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TableLayout
+            android:id="@+id/table_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+        	<TableRow
+        	    android:id="@+id/log_header"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:padding="@dimen/table_padding" >
+
+        	    <TextView
+        	        android:layout_width="0dp"
+        	        android:layout_height="wrap_content"
+        	        android:layout_gravity="center_vertical"
+        	        android:layout_weight="1"
+        	        android:gravity="left"
+        	        android:paddingLeft="10dp"
+        	        android:text="@string/name_head"
+        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        	    <TextView
+        	        android:layout_width="0dp"
+        	        android:layout_height="wrap_content"
+        	        android:layout_gravity="center_vertical"
+        	        android:layout_weight="1"
+        	        android:gravity="left"
+        	        android:paddingLeft="10dp"
+        	        android:text="@string/number_head"
+        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        	    <TextView
+        	        android:layout_width="0dp"
+        	        android:layout_height="wrap_content"
+        	        android:layout_gravity="center_vertical"
+        	        android:layout_weight="1"
+        	        android:gravity="left"
+        	        android:paddingLeft="10dp"
+        	        android:text="@string/start_head"
+        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        	    <TextView
+        	        android:layout_width="0dp"
+        	        android:layout_height="wrap_content"
+        	        android:layout_gravity="center_vertical"
+        	        android:layout_weight="1"
+        	        android:gravity="left"
+        	        android:paddingLeft="10dp"
+        	        android:text="@string/end_head"
+        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+        	</TableRow>
+            
+		</TableLayout>
+
+		<Button
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" 
+		    android:text="@string/ 
+		    />"
+
+	</LinearLayout>
+</ScrollView>

@@ -119,7 +119,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="@string/button_pause"
-        android:visibility="invisible" />
+        android:visibility="invisible" 
+        android:onClick="close_method"/>
 	
 </RelativeLayout>
 </ScrollView>

@@ -12,7 +12,8 @@
     <string name="desc_queue">queue count</string>
     <string name="desc_clock">clock</string>
     <string name="button_close">OPEN QUEUE</string>
-    <string name="button_pause">PAUSE QUEUE</string>
+    <string name="button_pause">CLOSE QUEUE</string>
+    <string name="button_export">EXPORT</string>
     <string name="title_activity_queue">Queue</string>
     <string name="now_serving">Now Serving</string>
     <string name="current_queue">Current Queue</string>
@@ -30,5 +31,12 @@
     <string name="profile_phone">Contact No.</string>
     <string name="profile_password">Password</string>
     <string name="save">Save</string>
-
+    <string name="title_activity_logs">LogsActivity</string>
+	<string name="name_head">Name</string>
+	<string name="number_head">Phone Number</string>
+	<string name="start_head">Start Service Time</string>
+	<string name="end_head">End Service Time</string>
+	<string name="log">Logs</string>
+	<string name="export_button">Export</string>
+	
 </resources>

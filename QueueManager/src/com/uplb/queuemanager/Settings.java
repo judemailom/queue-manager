@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-//import android.widget.Toast;
 
 public class Settings extends Activity {
 	private EditText password, name, contact, address;
