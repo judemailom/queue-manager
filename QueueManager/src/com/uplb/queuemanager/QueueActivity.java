@@ -65,33 +65,43 @@ public class QueueActivity extends Activity {
 	           String senderPhoneNumber=msgs[0].getOriginatingAddress();  
 	           
 	           //check for duplicates
-	           boolean duplicate = true;
+	           boolean duplicate=false;
 	           databaseAdapter = new DatabaseAdapter(context);
 	           databaseAdapter.open();
-	           for(String phone: databaseAdapter.getAllCustomers()){
-	        	   if(phone.equals(senderPhoneNumber)){
-	        		   duplicate = true;
-	        		   break;
-	        	   }
-	        	   else
-	        		   duplicate = false;
+	           if(databaseAdapter.getAllCustomers()!=null){
+		           for(String phone: databaseAdapter.getAllCustomers()){
+		        	   if(phone.equals(senderPhoneNumber)){
+		        		   duplicate = true;
+		        		   break;
+		        	   }
+		        	   else
+		        		   duplicate = false;
+		           }
 	           }
-	           
 	           //REGEX (Fname Lname ENQUEUE or Fname Lname INQUIRE)
 	           Pattern pattern = Pattern.compile("([a-zA-Z]+\\s)+(ENQUEUE|INQUIRE|enqueue|inquire)\n");
 				
-			   String name = messageReceived.substring(0, messageReceived.lastIndexOf(" "));
-			   String operation = messageReceived.substring(messageReceived.lastIndexOf(" ") + 1);
-				
-			   Matcher matcher = pattern.matcher(messageReceived);
+	           Matcher matcher = pattern.matcher(messageReceived);
 
 			   boolean match = false;
 	           while (matcher.find()) {
 	                   match = true;
 	           }
 	           
+	           String name;
+	           String operation;
+	           if(match){
+	        	   name = messageReceived.substring(0, messageReceived.lastIndexOf(" "));
+				   operation = messageReceived.substring(messageReceived.lastIndexOf(" ") + 1);
+	           }
+	           else {
+	        	   name ="";
+	        	   operation="";
+	           }
+	        	   
+	           
 	           operation = operation.toLowerCase();
-	           if(match&&operation.equals("enqueue\n")&& !duplicate){
+	           if(match&&operation.equals("enqueue\n")&& !duplicate){ //enqueue not enqueued
 	                
 	           //waiting time computation
 	           int average_service_time = 0;
@@ -147,7 +157,7 @@ public class QueueActivity extends Activity {
 	           
 	           
 	           }//end if
-	           else if(match&&operation.equals("inquire\n")){ 	//inquire will be for customers not in the queue yet
+	           else if(match&&operation.equals("inquire\n")&&!duplicate){ 	//inquire not enqueued
 	        	   
 	        	   //waiting time computation
 	               int average_service_time = 0;
@@ -173,15 +183,36 @@ public class QueueActivity extends Activity {
 	            	   sms.sendTextMessage(senderPhoneNumber, null, info_message, null, null);
 	            	   
 	            	   //prompt regarding sent information message
-		               Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
+		               //Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + expected_waiting_time, Toast.LENGTH_LONG).show();
 	               }catch (Exception e) {
 	            	   Toast.makeText(context,"SMS failed, please try again.",Toast.LENGTH_LONG).show();
 	            	   e.printStackTrace();
 	               }
 	               abortBroadcast();		//prevents inbox from receiving the message
 	           }
-	           
-	           else if(duplicate){
+	           else if(match&&operation.equals("inquire\n")&&duplicate){ 	//inquire enqueued
+	        	   
+	        	   String estimated_waiting_time = databaseAdapter.getWaitingTime(senderPhoneNumber); 
+	               String mgt = databaseAdapter.getUserName();
+	               
+	               String total_customer_num = Integer.toString(databaseAdapter.getQueuePosn(senderPhoneNumber)-1);
+	               
+	               //send information message
+	               String info_message = "Good day! Currently, there are "+ total_customer_num +" customers on the line. Estimated waiting time is " + estimated_waiting_time +" minutes. If you want to be enqueued just reply with this format: FIRST_NAME [space] LAST _NAME [space] ENQUEUE. Thank you! -" +mgt+ " Management";
+	               
+	        	   try{
+	            	   SmsManager sms = SmsManager.getDefault(); 
+	            	   sms.sendTextMessage(senderPhoneNumber, null, info_message, null, null);
+	            	   
+	            	   //prompt regarding sent information message
+		               Toast.makeText(context, "Information SMS Sent to " + senderPhoneNumber + "with waiting time " + estimated_waiting_time, Toast.LENGTH_LONG).show();
+	               }catch (Exception e) {
+	            	   Toast.makeText(context,"SMS failed, please try again.",Toast.LENGTH_LONG).show();
+	            	   e.printStackTrace();
+	               }
+	               abortBroadcast();		//prevents inbox from receiving the message
+	           }
+	           else if(match&&operation.equals("enqueue\n")&&duplicate){ //enqueue enqueued
 	        	   String info_message = "Sorry but you are already on the queue.";
 	               
 	        	   try{
@@ -256,8 +287,7 @@ public class QueueActivity extends Activity {
 			        
 			        //compute | update estimated waiting time | formula
 			        int sts = databaseAdapter.getServiceTimeSum(); 
-			        int custDone = databaseAdapter.retrieveCustomerDone();	
-			        int awt = sts/custDone; //average waiting (service) time
+			        int awt = sts/2; //average waiting (service) time
 			        
 			        //UPDATE NEW WAITING TIME -> consider queue table
             		//do i really need queue table T_T

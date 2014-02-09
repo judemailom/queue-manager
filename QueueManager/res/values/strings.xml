@@ -36,7 +36,9 @@
 	<string name="number_head">Phone Number</string>
 	<string name="start_head">Start Service Time</string>
 	<string name="end_head">End Service Time</string>
+	<string name="remarks_head">Remarks</string>
 	<string name="log">Logs</string>
 	<string name="export_button">Export</string>
+	
 	
 </resources>

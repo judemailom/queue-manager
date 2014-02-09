@@ -8,20 +8,37 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical" >
-		
-     	<TextView
-     	  android:id="@+id/log_date"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
-          android:gravity="left"
-          android:paddingLeft="10dp"
-          android:textAppearance="?android:attr/textAppearanceSmall" />
+
+		<!-- <Button
+		    android:id="@+id/select_date"
+		    style="?android:attr/buttonStyleSmall"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/select_date_button" 
+		    android:onClick="showDatePickerDialog"/>
+		 -->
 
         <TableLayout
             android:id="@+id/table_log"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
+
+            <TableRow
+                android:id="@+id/date_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" 
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:id="@+id/log_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"  
+            		android:layout_span="5"
+            		android:textStyle="bold"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </TableRow>
 
         	<TableRow
         	    android:id="@+id/log_header"
@@ -34,40 +51,50 @@
         	        android:layout_height="wrap_content"
         	        android:layout_gravity="center_vertical"
         	        android:layout_weight="1"
-        	        android:gravity="left"
-        	        android:paddingLeft="10dp"
+        	        android:gravity="center"
+        	        android:paddingLeft="15dp"
+        	        android:paddingRight="5dp"
         	        android:text="@string/name_head"
-        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+        	        android:textSize="12sp" />
 
         	    <TextView
         	        android:layout_width="0dp"
         	        android:layout_height="wrap_content"
-        	        android:layout_gravity="center_vertical"
         	        android:layout_weight="1"
-        	        android:gravity="left"
-        	        android:paddingLeft="10dp"
+        	        android:gravity="center"
+        	        android:paddingRight="5dp"
         	        android:text="@string/number_head"
-        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+        	        android:textSize="12sp" />
 
         	    <TextView
         	        android:layout_width="0dp"
         	        android:layout_height="wrap_content"
         	        android:layout_gravity="center_vertical"
         	        android:layout_weight="1"
-        	        android:gravity="left"
-        	        android:paddingLeft="10dp"
+        	        android:gravity="center"
+        	        android:paddingRight="5dp"
         	        android:text="@string/start_head"
-        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+        	        android:textSize="12sp" />
 
         	    <TextView
         	        android:layout_width="0dp"
         	        android:layout_height="wrap_content"
         	        android:layout_gravity="center_vertical"
         	        android:layout_weight="1"
-        	        android:gravity="left"
-        	        android:paddingLeft="10dp"
+        	        android:gravity="center"
+        	        android:paddingRight="5dp"
         	        android:text="@string/end_head"
-        	        android:textAppearance="?android:attr/textAppearanceSmall" />
+        	        android:textSize="12sp" />
+        	    
+        	    <TextView
+        	        android:layout_width="0dp"
+        	        android:layout_height="wrap_content"
+        	        android:layout_gravity="center_vertical"
+        	        android:layout_weight="1"
+        	        android:gravity="center"
+        	        android:paddingRight="15dp"
+        	        android:text="@string/remarks_head"
+        	        android:textSize="12sp" />
         	</TableRow>
             
 		</TableLayout>
@@ -81,4 +108,5 @@
 
 
 	</LinearLayout>
+	
 </ScrollView>

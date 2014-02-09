@@ -13,18 +13,20 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="comput" key="selection"/>
+		<item value="retrieve" key="selection"/>
 		<list key="findhistory">
-			<item value="comput"/>
-			<item value="getAll"/>
-			<item value="done"/>
-			<item value="updateQueue"/>
-			<item value="updateSt"/>
-			<item value="customerLis"/>
-			<item value="database"/>
-			<item value="oncreate"/>
+			<item value="retrieve"/>
+			<item value="inquire"/>
+			<item value="getAllCustomers"/>
+			<item value="`"/>
+			<item value="Toast"/>
+			<item value="else"/>
+			<item value="regex"/>
+			<item value="updateStatus"/>
 		</list>
 		<list key="replacehistory">
+			<item value="dp"/>
+			<item value="android:textSize=&quot;14px&quot;"/>
 			<item value="queue"/>
 			<item value=""/>
 		</list>

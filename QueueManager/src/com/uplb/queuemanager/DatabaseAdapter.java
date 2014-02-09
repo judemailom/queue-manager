@@ -153,6 +153,20 @@ public class DatabaseAdapter
         }
         
         /**
+         * Update status of customer 0 - not in the queue, 1 - enqueued
+         *
+         * @param phone the phone number of the customer
+         */
+        public void updateStatus2(String phone){
+        	Log.i(LOG,"UPDATING STATUS OF CUSTOMER = "+phone);
+       	 	ContentValues updatedValues = new ContentValues();
+            updatedValues.put("ISQUEUED", -1);
+            
+            String where="PHONE_NUMBER = ?";
+            db.update("CUSTOMER",updatedValues, where, new String[]{phone});
+        }
+        
+        /**
          * Update start time (transaction) of customer
          *
          * @param phone the phone number of the customer
@@ -406,6 +420,25 @@ public class DatabaseAdapter
     		Cursor cursor = db.rawQuery(query,null);
     		if(cursor.moveToFirst())
     			et = Integer.parseInt(cursor.getString(cursor.getColumnIndex("QUEUE_POSITION")));
+    		cursor.close();
+        	
+            return et;
+        }
+        
+        
+        /**
+         * Gets the queue remarks. 1=enqueued, 0=served, -1 = cancelled
+         *
+         * @param phone the phone number
+         * @return the isqueued value
+         */
+        public int getRemarks(String phone){
+    		int et=0;
+    		
+    		String query="SELECT ISQUEUED FROM CUSTOMER WHERE PHONE_NUMBER='"+phone+"';";
+    		Cursor cursor = db.rawQuery(query,null);
+    		if(cursor.moveToFirst())
+    			et = Integer.parseInt(cursor.getString(cursor.getColumnIndex("ISQUEUED")));
     		cursor.close();
         	
             return et;

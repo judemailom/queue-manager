@@ -3,28 +3,28 @@ package com.uplb.queuemanager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.telephony.SmsManager;
-import android.telephony.SmsMessage;
-import android.util.Log;
+//import android.os.Bundle;
+//import android.telephony.SmsManager;
+//import android.telephony.SmsMessage;
+//import android.util.Log;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+//import java.text.SimpleDateFormat;
+//import java.util.Calendar;
+//import java.util.Date;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
 
-import android.widget.Toast;
+//import android.widget.Toast;
 
 public class SMSReceiver extends BroadcastReceiver
 {
-	private static final String LOG = "com.uplb.queuemanager";
+/*	private static final String LOG = "com.uplb.queuemanager";
 	private DatabaseAdapter databaseAdapter;
-	
+*/	
     @Override
     public void onReceive(Context context, Intent intent) 
     {
-    	//get the SMS message passed in
+/*    	//get the SMS message passed in
         Bundle bundle = intent.getExtras();        
         SmsMessage[] msgs = null;
         String messageReceived = "";            
@@ -168,6 +168,6 @@ public class SMSReceiver extends BroadcastReceiver
            //Intent i = getIntent();
            //finish();
            //startActivity(i);
-       }                         
+       }  */                       
     }
 }
